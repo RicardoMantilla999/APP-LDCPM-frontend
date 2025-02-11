@@ -1,0 +1,115 @@
+<div class="header bg-gradient-danger pb-6 pt-5 pt-md-6">
+    <div class="container-fluid">
+        <div class="header-body">
+        </div>
+    </div>
+</div>
+<!-- Page content -->
+<div class="container-fluid mt--7">
+    <!-- Table -->
+    <!-- Dark table -->
+    <div class="row mt-5">
+        <div class="col">
+            <div class="card bg-default shadow">
+                <div class="card-header bg-transparent border-0 d-flex">
+                    <h3 class="text-white mb-0 me-auto"> Usuarios </h3>
+                </div>
+
+                <div class="table-responsive" *ngIf="mostrarTabla">
+                    <table class="table align-items-center table-dark table-flush">
+                        <thead class="thead-dark">
+                            <tr>
+                                <th scope="col">#</th>
+                                <th scope="col">Nombre de usuario</th>
+                                <th scope="col">Email</th>
+                                <th scope="col">Rol</th>
+                                <th scope="col">Opciones</th>
+                            </tr>
+
+                        </thead>
+                        <tbody>
+                            <tr *ngFor="let item of datosTabla; let i = index">
+
+                                <td>{{ i + 1 }}</td>
+
+                                <th scope="row">
+                                    <div class="media align-items-center">
+                                        <div class="media-body">
+                                            <span class="mb-0 text-sm">{{item.username}}</span>
+                                        </div>
+                                    </div>
+                                </th>
+                                <td>{{ item.email }} </td>
+                                <td>{{ item.rol}} </td>
+                                <td class="text-right">
+                                    <div ngbDropdown placement="bottom-right">
+                                        <a class="btn btn-sm btn-icon-only text-light" ngbDropdownToggle>
+                                            <i class="fas fa-ellipsis-v"></i>
+                                        </a>
+                                        <div ngbDropdownMenu class=" dropdown-menu-right dropdown-menu-arrow">
+                                            <a class="dropdown-item" href="javascript:void(0)"
+                                                (click)="mostrarFormEditar(item)">Editar</a>
+                                            <a class="dropdown-item" href="javascript:void(0)"
+                                                (click)="eliminarUsuario(item)">Eliminar</a>
+                                        </div>
+                                    </div>
+                                </td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+
+                <!--   FORMULARIOS PARA EDITAR      -->
+                <div *ngIf="mostrarFormularioEditar">
+                    <ng-container>
+                        <div class="card-body">
+                            <form class="needs-validation" [formGroup]="editarUsuario"
+                                (ngSubmit)="postForm(editarUsuario.value)">
+                                <h5 class="heading-small text-muted mb-4">Editar Campeonato</h5>
+                                <div class="pl-lg-4">
+                                    <div class="row">
+                                        <div class="col">
+                                            <div class="form-group">
+                                                <label class="form-control-label" for="nombre">Nombre del
+                                                    Usuario</label>
+                                                <input type="text" id="nombre"
+                                                    class="form-control form-control-alternative" placeholder="Nombre"
+                                                    formControlName="username">
+                                            </div>
+                                        </div>
+                                        <div class="col">
+                                            <div class="form-group">
+                                                <label class="form-control-label" for="email">Email</label>
+                                                <input type="text" class="form-control form-control-alternative"
+                                                    id="email" formControlName="email">
+                                            </div>
+                                        </div>
+                                        <div class="col">
+                                            <label class="form-control-label" for="select-rol">Seleccione el
+                                                Rol</label>
+                                            <select formControlName="rol" class="form-control">
+                                                <option *ngFor="let rol of roles" [value]="rol.value">
+                                                    {{ rol.key }}
+                                                </option>
+                                            </select>
+                                        </div>
+                                        <div class="col">
+
+                                        </div>
+                                    </div>
+                                </div>
+
+                            </form>
+                            <div class="col text-right">
+                                <a type="button" class="btn btn-outline-success" (click)="actualizarUsuario()">GUARDAR
+                                    CAMBIOS </a>
+                                <a type="button" class="btn btn-outline-danger" (click)="regresar()">CANCELAR</a>
+                            </div>
+                        </div>
+                    </ng-container>
+                </div>
+
+
+            </div>
+        </div>
+    </div>

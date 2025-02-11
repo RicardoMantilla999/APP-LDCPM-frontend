@@ -1,0 +1,575 @@
+<div class="header bg-gradient-danger pb-6 pt-5 pt-md-6">
+    <div class="container-fluid">
+        <div class="header-body">
+            <!-- Card stats -->
+            <div class="row">
+                <div class="col">
+                    <div class="card card-stats mb-4 mb-xl-0" (click)="mostrarDetalles('Posiciones')">
+                        <div class="card-body">
+                            <div class="row">
+                                <div class="col">
+                                    <h5 class="card-title text-uppercase text-muted mb-0">Tabla de Posiciones</h5>
+                                </div>
+                                <div class="col-auto">
+                                    <div class="icon icon-shape bg-danger text-white rounded-circle shadow">
+                                        <i class="ni ni-trophy"></i>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="col">
+                    <div class="card card-stats mb-4 mb-xl-0" (click)="mostrarDetalles('Goleadores')">
+                        <div class="card-body">
+                            <div class="row">
+                                <div class="col">
+                                    <h5 class="card-title text-uppercase text-muted mb-0">Tabla de Goleadores</h5>
+                                </div>
+                                <div class="col-auto">
+                                    <div class="icon icon-shape bg-warning text-white rounded-circle shadow">
+                                        <i class="fas fa-users"></i>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="col">
+                    <div class="card card-stats mb-4 mb-xl-0" (click)="mostrarDetalles('Tarjetas')">
+                        <div class="card-body">
+                            <div class="row">
+                                <div class="col">
+                                    <h5 class="card-title text-uppercase text-muted mb-0">Tarjetas</h5>
+                                </div>
+                                <div class="col-auto">
+                                    <div class="icon icon-shape bg-yellow text-white rounded-circle shadow">
+                                        <i class="ni ni-collection"></i>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="col">
+                    <div class="card card-stats mb-4 mb-xl-0" (click)="mostrarDetalles('Carnets')">
+                        <div class="card-body">
+                            <div class="row">
+                                <div class="col">
+                                    <h5 class="card-title text-uppercase text-muted mb-0">Carnets Jugadores</h5>
+                                </div>
+                                <div class="col-auto">
+                                    <div class="icon icon-shape bg-danger text-white rounded-circle shadow">
+                                        <i class="ni ni-badge"></i>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+<!-- Page content -->
+<div class="container-fluid mt--7">
+    <!-- Table -->
+    <!-- Dark table -->
+    <div class="row mt-5">
+        <div class="col">
+            <div class="card bg-default shadow">
+                <div class="card-header bg-transparent border-0 d-flex">
+                    <h3 class="text-white mb-0 me-auto">{{tituloTabla}}</h3>
+
+                    <div class="col text-right">
+
+                    </div>
+                    <div class="form-group col text-right" *ngIf="tituloTabla === 'Tabla de Goleadores'">
+                        <select [(ngModel)]="categoriaSeleccionada" class="form-control">
+                            <option [value]="null">Categorías</option>
+                            <option *ngFor="let categoria of categorias" [value]="categoria.id">
+                                {{ categoria.categoria }}
+                            </option>
+                        </select>
+                    </div>
+                    <div class="form-group col text-right"
+                        *ngIf="tituloTabla === 'Tabla de Posiciones' || tituloTabla === 'Tarjetas' || tituloTabla === 'Carnets Jugadores'">
+                        <select [(ngModel)]="categoriaSeleccionada" class="form-control" (change)="obtenerEquipos()">
+                            <option [value]="null">Categorías</option>
+                            <option *ngFor="let categoria of categorias" [value]="categoria.id">
+                                {{ categoria.categoria }}
+                            </option>
+                        </select>
+                    </div>
+
+                    <div class="form-group col text-right" *ngIf="tituloTabla === 'Tabla de Goleadores'">
+                        <select [(ngModel)]="cantidadRegistros" class="form-control" (change)="obtenerGoleadores()">
+                            <option value="null">Cantidad de registros</option>
+                            <option value="3">3 registros</option>
+                            <option value="5">5 registros</option>
+                            <option value="10">10 registros</option>
+                            <option value="20">20 registros</option>
+                        </select>
+                    </div>
+                    <div class="form-group col text-right" *ngIf="tituloTabla === 'Carnets Jugadores'">
+                        <select [(ngModel)]="equipoSeleccionado" class="form-control"
+                            (change)="obtenerJugadoresByEquipo(); obtenerUnaCategoria()">
+                            <option value="null">Equipos</option>
+                            <option *ngFor="let equipo of equipos" [value]="equipo.id"> {{equipo.nombre}} </option>
+                        </select>
+                    </div>
+                    <div class="form-group col text-right" *ngIf="tituloTabla === 'Tarjetas'">
+                        <select [(ngModel)]="equipoSeleccionado" class="form-control"
+                            (change)="obtenerEquipo(); obtenerUnaCategoria()">
+                            <option value="null">Equipos</option>
+                            <option *ngFor="let equipo of equipos" [value]="equipo.id"> {{equipo.nombre}} </option>
+                        </select>
+                    </div>
+
+                    <div class="form-group col text-right" *ngIf="tituloTabla === 'Tabla de Posiciones'">
+                        <select [(ngModel)]="faseSeleccionada" (change)="obtenerTablaPosiciones()" class="form-control">
+                            <option [value]="null">Fases</option>
+                            <option *ngFor="let fase of fases" [value]="fase.id">
+                                {{ fase.orden }} - {{fase.nombre}}
+                            </option>
+                        </select>
+                    </div>
+                    <div class="form-group col text-right" *ngIf="tituloTabla === 'Tarjetas'">
+                        <select [(ngModel)]="faseSeleccionada" (change)="cargarTarjetas()" class="form-control">
+                            <option [value]="null">Fases</option>
+                            <option *ngFor="let fase of fases" [value]="fase.id">
+                                {{ fase.orden }} - {{fase.nombre}}
+                            </option>
+                        </select>
+                    </div>
+                    <div *ngIf="tituloTabla === 'Carnets Jugadores' && userRol === 'admin' "
+                        class="form-group col text-right">
+                        <button (click)="generarReporte(tituloTabla)" class="btn btn-secondary">
+                            <img src="../../../assets/img/theme/pdf .png" alt="Descargar PDF"
+                                style="width: 25px; height: 25px; margin-right: 5px;">
+                        </button>
+                    </div>
+                </div>
+                <div class="col-10">
+
+                </div>
+
+                <div class="container">
+
+                    <div class="table-responsive">
+
+                        <table class="table align-items-center table-dark table-flush">
+                            <thead class="thead-dark">
+                                <tr *ngIf="tituloTabla === 'Tabla de Posiciones' && !mostrarResultadoPosiciones">
+                                    <th scope="col">Pos</th>
+                                    <th scope="col">Equipo</th>
+                                    <th scope="col">P.J</th>
+                                    <th scope="col">P.G</th>
+                                    <th scope="col">P.E</th>
+                                    <th scope="col">P.P</th>
+                                    <th scope="col">G.F</th>
+                                    <th scope="col">G.C</th>
+                                    <th scope="col">G.D</th>
+                                    <th scope="col">Pts</th>
+                                </tr>
+                                <tr *ngIf="tituloTabla === 'Tabla de Goleadores'">
+                                    <th scope="col">Nro</th>
+                                    <th scope="col">Equipo</th>
+                                    <th scope="col">Nombres</th>
+                                    <th scope="col">Apellidos</th>
+                                    <th scope="col">Goles</th>
+                                </tr>
+                                <tr *ngIf="tituloTabla === 'Tarjetas'">
+                                    <th scope="col">Nombre Completo</th>
+                                    <ng-container *ngFor="let fecha of fechas">
+                                        <th scope="col">{{ fecha }}</th>
+                                    </ng-container>
+                                </tr>
+                                <tr *ngIf="tituloTabla === 'Carnets Jugadores'">
+                                    <th scope="col">Cedula</th>
+                                    <th scope="col">Nombre Completo</th>
+                                    <th scope="col">Dorsal</th>
+                                    <th scope="col">Fecha Nacimiento </th>
+                                    <th scope="col">Origen</th>
+                                    <th scope="col">Foto</th>
+                                    <th scope="col">Elejir</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <ng-container *ngIf="!mostrarResultadoPosiciones">
+                                    <tr *ngFor="let item of datosTabla; let i = index">
+                                        <td
+                                            *ngIf="tituloTabla === 'Tabla de Posiciones' || tituloTabla === 'Tabla de Goleadores'">
+                                            {{ i + 1 }}</td>
+                                        <td *ngIf="tituloTabla === 'Carnets Jugadores'"> {{item.cedula}} </td>
+
+                                        <th scope="row">
+                                            <div class="media align-items-center">
+                                                <div class="media-body">
+                                                    <span class="mb-0 text-sm"
+                                                        *ngIf="tituloTabla === 'Tabla de Posiciones'">{{item.equipo.nombre
+                                                        }}</span>
+                                                    <span class="mb-0 text-sm"
+                                                        *ngIf="tituloTabla === 'Tabla de Goleadores'">{{item.equipoNombre
+                                                        }}</span>
+                                                    <span class="mb-0 text-sm"
+                                                        *ngIf="tituloTabla === 'Tarjetas' || tituloTabla === 'Carnets Jugadores'">{{item.nombres
+                                                        }} {{item.apellidos}} </span>
+                                                </div>
+                                            </div>
+                                        </th>
+                                        <td *ngIf="tituloTabla === 'Tabla de Posiciones'">{{
+                                            item.partidosJugados }}
+                                        <td *ngIf="tituloTabla === 'Tabla de Posiciones'">{{
+                                            item.partidosGanados }}
+                                        <td *ngIf="tituloTabla === 'Tabla de Posiciones'">{{
+                                            item.partidosEmpatados }}
+                                        <td *ngIf="tituloTabla === 'Tabla de Posiciones'">{{
+                                            item.partidosPerdidos }}
+                                        <td *ngIf="tituloTabla === 'Tabla de Posiciones'">{{
+                                            item.golesFavor }}
+                                        <td *ngIf="tituloTabla === 'Tabla de Posiciones'">{{
+                                            item.golesContra }}
+                                        <td *ngIf="tituloTabla === 'Tabla de Posiciones'">{{
+                                            item.diferenciaGoles }}
+                                        <td *ngIf="tituloTabla === 'Tabla de Posiciones'">{{
+                                            item.puntos }}
+
+
+
+                                        <td *ngIf="tituloTabla === 'Tabla de Goleadores'">{{ item.nombres }} </td>
+                                        <td *ngIf="tituloTabla === 'Tabla de Goleadores'">{{ item.apellidos }} </td>
+                                        <td *ngIf="tituloTabla === 'Tabla de Goleadores'">{{ item.totalGoles }} </td>
+
+                                        <ng-container *ngIf="tituloTabla === 'Tarjetas'">
+                                            <ng-container *ngFor="let fecha of fechas">
+                                                <td>{{ item.fechas[fecha] || 'ST' }}</td>
+                                            </ng-container>
+                                        </ng-container>
+
+                                        <td *ngIf="tituloTabla === 'Carnets Jugadores'">{{ item.dorsal }} </td>
+                                        <td *ngIf="tituloTabla === 'Carnets Jugadores'">{{ item.fecha_nacimiento }}
+                                        </td>
+                                        <td *ngIf="tituloTabla === 'Carnets Jugadores'">{{ item.origen }} </td>
+                                        <td *ngIf="tituloTabla === 'Carnets Jugadores'">
+                                            <div class="media align-items-center">
+                                                <a href="javascript:void(0)" class="avatar rounded-circle mr-3">
+                                                    <img alt="Logo del equipo"
+                                                        [src]="item.foto"
+                                                        alt="Logo del equipo">
+                                                </a>
+                                            </div>
+                                        </td>
+                                        <td *ngIf="tituloTabla === 'Carnets Jugadores'"> Si / No </td>
+
+                                    </tr>
+                                </ng-container>
+                                <tr *ngIf="datosTabla?.length === 0 && !mostrarResultadoPosiciones">
+                                    <td [attr.colspan]="tituloTabla === 'Tarjetas' ? (fechas.length + 1) : 10"
+                                        class="text-center">
+                                        No hay datos disponibles
+                                    </td>
+                                </tr>
+                                <ng-container *ngIf="mostrarResultadoPosiciones">
+                                    <ng-container *ngIf="faseSeleccionada === '3'">
+                                        <tr>
+                                            <td class="highlight-cell">{{ partido1CuartosG1?.equipo_1?.nombre }}</td>
+                                            <td class="border-abajo"></td>
+                                            <td class="no-border"></td>
+                                            <td class="no-border"></td>
+                                            <td class="no-border"></td>
+                                            <td class="no-border"></td>
+                                            <td class="no-border"></td>
+                                            <td class="no-border"></td>
+                                            <td class="no-border"></td>
+                                            <td class="border-abajo"></td>
+                                            <td class="highlight-cell">{{ partido1CuartosG2?.equipo_1?.nombre }}</td>
+                                        </tr>
+                                        <tr>
+                                            <td class="no-border"></td>
+                                            <td class="border-abajo"></td>
+                                            <td class="highlight-cell"> </td>
+                                            <td class="no-border"></td>
+                                            <td class="no-border"></td>
+                                            <td class="highlight-cell"> </td>
+                                            <td class="no-border"></td>
+                                            <td class="no-border"></td>
+                                            <td class="highlight-cell"></td>
+                                            <td class="border-abajo"></td>
+                                            <td class="no-border"></td>
+                                        </tr>
+                                        <tr>
+                                            <td class="highlight-cell">{{ partido1CuartosG1?.equipo_2?.nombre }}</td>
+                                            <td class="no-border"></td>
+                                            <td class="border-derecha"></td>
+                                            <td class="border-abajo"></td>
+                                            <td class="border-derecha"></td>
+                                            <td class="no-border"></td>
+                                            <td class="border-izquierda"></td>
+                                            <td class="border-abajo"></td>
+                                            <td class="border-izquierda"></td>
+                                            <td class="no-border"></td>
+                                            <td class="highlight-cell">{{ partido1CuartosG2?.equipo_2?.nombre }}</td>
+                                        </tr>
+                                        <tr>
+                                            <td class="no-border"></td>
+                                            <td class="no-border"></td>
+                                            <td class="no-border"></td>
+                                            <td class="border-arriba"></td>
+                                            <td class="highlight-cell"> </td>
+                                            <td class="no-border"></td>
+                                            <td class="highlight-cell"> </td>
+                                            <td class="border-arriba"></td>
+                                            <td class="no-border"></td>
+                                            <td class="no-border"></td>
+                                            <td class="no-border"></td>
+                                        </tr>
+
+                                        <tr>
+                                            <td class="highlight-cell">{{ partido2CuartosG1?.equipo_1?.nombre }}</td>
+                                            <td class="no-border"></td>
+                                            <td class="border-derecha"></td>
+                                            <td class="border-arriba"></td>
+                                            <td class="no-border"></td>
+                                            <td class="no-border"></td>
+                                            <td class="no-border"></td>
+                                            <td class="border-arriba"></td>
+                                            <td class="border-izquierda"></td>
+                                            <td class="no-border"></td>
+                                            <td class="highlight-cell">{{ partido2CuartosG2?.equipo_1?.nombre }}</td>
+                                        </tr>
+                                        <tr>
+                                            <td class="no-border"></td>
+                                            <td class="border-arriba"></td>
+                                            <td class="highlight-cell"> </td>
+                                            <td class="no-border"></td>
+                                            <td class="no-border"></td>
+                                            <td class="no-border"></td>
+                                            <td class="no-border"></td>
+                                            <td class="no-border"></td>
+                                            <td class="highlight-cell"> </td>
+                                            <td class="border-arriba"></td>
+                                            <td class="no-border"></td>
+                                        </tr>
+                                        <tr>
+                                            <td class="highlight-cell">{{ partido2CuartosG1?.equipo_2?.nombre }}</td>
+                                            <td class="border-arriba"></td>
+                                            <td class="no-border"></td>
+                                            <td class="no-border"></td>
+                                            <td class="no-border"></td>
+                                            <td class="no-border"></td>
+                                            <td class="no-border"></td>
+                                            <td class="no-border"></td>
+                                            <td class="no-border"></td>
+                                            <td class="border-arriba"></td>
+                                            <td class="highlight-cell">{{ partido2CuartosG2?.equipo_2?.nombre }}</td>
+                                        </tr>
+                                    </ng-container>
+                                    <ng-container *ngIf="faseSeleccionada === '4'">
+                                        <tr>
+                                            <td class="highlight-cell">{{ partido1CuartosG1?.equipo_1?.nombre }}</td>
+                                            <td class="border-abajo"></td>
+                                            <td class="no-border"></td>
+                                            <td class="no-border"></td>
+                                            <td class="no-border"></td>
+                                            <td class="no-border"></td>
+                                            <td class="no-border"></td>
+                                            <td class="no-border"></td>
+                                            <td class="no-border"></td>
+                                            <td class="border-abajo"></td>
+                                            <td class="highlight-cell">{{ partido1CuartosG2?.equipo_1?.nombre }}</td>
+                                        </tr>
+                                        <tr>
+                                            <td class="no-border"></td>
+                                            <td class="border-abajo"></td>
+                                            <td class="highlight-cell"> {{partidoSemifinalG1?.equipo_2?.nombre}} </td>
+                                            <td class="no-border"></td>
+                                            <td class="no-border"></td>
+                                            <td class="highlight-cell"> </td>
+                                            <td class="no-border"></td>
+                                            <td class="no-border"></td>
+                                            <td class="highlight-cell">{{partidoSemifinalG2?.equipo_1?.nombre}}</td>
+                                            <td class="border-abajo"></td>
+                                            <td class="no-border"></td>
+                                        </tr>
+                                        <tr>
+                                            <td class="highlight-cell">{{ partido1CuartosG1?.equipo_2?.nombre }}</td>
+                                            <td class="no-border"></td>
+                                            <td class="border-derecha"></td>
+                                            <td class="border-abajo"></td>
+                                            <td class="border-derecha"></td>
+                                            <td class="no-border"></td>
+                                            <td class="border-izquierda"></td>
+                                            <td class="border-abajo"></td>
+                                            <td class="border-izquierda"></td>
+                                            <td class="no-border"></td>
+                                            <td class="highlight-cell">{{ partido1CuartosG2?.equipo_2?.nombre }}</td>
+                                        </tr>
+                                        <tr>
+                                            <td class="no-border"></td>
+                                            <td class="no-border"></td>
+                                            <td class="no-border"></td>
+                                            <td class="border-arriba"></td>
+                                            <td class="highlight-cell"> </td>
+                                            <td class="no-border"></td>
+                                            <td class="highlight-cell"> </td>
+                                            <td class="border-arriba"></td>
+                                            <td class="no-border"></td>
+                                            <td class="no-border"></td>
+                                            <td class="no-border"></td>
+                                        </tr>
+
+                                        <tr>
+                                            <td class="highlight-cell">{{ partido2CuartosG1?.equipo_1?.nombre }}</td>
+                                            <td class="no-border"></td>
+                                            <td class="border-derecha"></td>
+                                            <td class="border-arriba"></td>
+                                            <td class="no-border"></td>
+                                            <td class="no-border"></td>
+                                            <td class="no-border"></td>
+                                            <td class="border-arriba"></td>
+                                            <td class="border-izquierda"></td>
+                                            <td class="no-border"></td>
+                                            <td class="highlight-cell">{{ partido2CuartosG2?.equipo_1?.nombre }}</td>
+                                        </tr>
+                                        <tr>
+                                            <td class="no-border"></td>
+                                            <td class="border-arriba"></td>
+                                            <td class="highlight-cell"> {{partidoSemifinalG1?.equipo_1?.nombre}} </td>
+                                            <td class="no-border"></td>
+                                            <td class="no-border"></td>
+                                            <td class="no-border"></td>
+                                            <td class="no-border"></td>
+                                            <td class="no-border"></td>
+                                            <td class="highlight-cell"> {{partidoSemifinalG2?.equipo_2?.nombre}} </td>
+                                            <td class="border-arriba"></td>
+                                            <td class="no-border"></td>
+                                        </tr>
+                                        <tr>
+                                            <td class="highlight-cell">{{ partido2CuartosG1?.equipo_2?.nombre }}</td>
+                                            <td class="border-arriba"></td>
+                                            <td class="no-border"></td>
+                                            <td class="no-border"></td>
+                                            <td class="no-border"></td>
+                                            <td class="no-border"></td>
+                                            <td class="no-border"></td>
+                                            <td class="no-border"></td>
+                                            <td class="no-border"></td>
+                                            <td class="border-arriba"></td>
+                                            <td class="highlight-cell">{{ partido2CuartosG2?.equipo_2?.nombre }}</td>
+                                        </tr>
+                                    </ng-container>
+                                    <ng-container *ngIf="faseSeleccionada === '9'">
+                                        <tr>
+                                            <td class="highlight-cell">{{ partido1CuartosG1?.equipo_1?.nombre }}</td>
+                                            <td class="border-abajo"></td>
+                                            <td class="no-border"></td>
+                                            <td class="no-border"></td>
+                                            <td class="no-border"></td>
+                                            <td class="no-border"></td>
+                                            <td class="no-border"></td>
+                                            <td class="no-border"></td>
+                                            <td class="no-border"></td>
+                                            <td class="border-abajo"></td>
+                                            <td class="highlight-cell">{{ partido1CuartosG2?.equipo_1?.nombre }}</td>
+                                        </tr>
+                                        <tr>
+                                            <td class="no-border"></td>
+                                            <td class="border-abajo"></td>
+                                            <td class="highlight-cell"> {{partidoSemifinalG1?.equipo_2?.nombre}} </td>
+                                            <td class="no-border"></td>
+                                            <td class="no-border"></td>
+                                            <td class="highlight-cell"> {{ equipoCampeon?.nombre }} </td>
+                                            <td class="no-border"></td>
+                                            <td class="no-border"></td>
+                                            <td class="highlight-cell">{{partidoSemifinalG2?.equipo_1?.nombre}}</td>
+                                            <td class="border-abajo"></td>
+                                            <td class="no-border"></td>
+                                        </tr>
+                                        <tr>
+                                            <td class="highlight-cell">{{ partido1CuartosG1?.equipo_2?.nombre }}</td>
+                                            <td class="no-border"></td>
+                                            <td class="border-derecha"></td>
+                                            <td class="border-abajo"></td>
+                                            <td class="border-derecha"></td>
+                                            <td class="no-border"></td>
+                                            <td class="border-izquierda"></td>
+                                            <td class="border-abajo"></td>
+                                            <td class="border-izquierda"></td>
+                                            <td class="no-border"></td>
+                                            <td class="highlight-cell">{{ partido1CuartosG2?.equipo_2?.nombre }}</td>
+                                        </tr>
+                                        <tr>
+                                            <td class="no-border"></td>
+                                            <td class="no-border"></td>
+                                            <td class="no-border"></td>
+                                            <td class="border-arriba"></td>
+                                            <td class="highlight-cell"> {{ partidoFinal?.equipo_1?.nombre }} </td>
+                                            <td class="no-border"></td>
+                                            <td class="highlight-cell"> {{ partidoFinal?.equipo_2?.nombre }} </td>
+                                            <td class="border-arriba"></td>
+                                            <td class="no-border"></td>
+                                            <td class="no-border"></td>
+                                            <td class="no-border"></td>
+                                        </tr>
+
+                                        <tr>
+                                            <td class="highlight-cell">{{ partido2CuartosG1?.equipo_1?.nombre }}</td>
+                                            <td class="no-border"></td>
+                                            <td class="border-derecha"></td>
+                                            <td class="border-arriba"></td>
+                                            <td class="no-border"></td>
+                                            <td class="no-border"></td>
+                                            <td class="no-border"></td>
+                                            <td class="border-arriba"></td>
+                                            <td class="border-izquierda"></td>
+                                            <td class="no-border"></td>
+                                            <td class="highlight-cell">{{ partido2CuartosG2?.equipo_1?.nombre }}</td>
+                                        </tr>
+                                        <tr>
+                                            <td class="no-border"></td>
+                                            <td class="border-arriba"></td>
+                                            <td class="highlight-cell"> {{partidoSemifinalG1?.equipo_1?.nombre}} </td>
+                                            <td class="no-border"></td>
+                                            <td class="no-border"></td>
+                                            <td class="no-border"></td>
+                                            <td class="no-border"></td>
+                                            <td class="no-border"></td>
+                                            <td class="highlight-cell"> {{partidoSemifinalG2?.equipo_2?.nombre}} </td>
+                                            <td class="border-arriba"></td>
+                                            <td class="no-border"></td>
+                                        </tr>
+                                        <tr>
+                                            <td class="highlight-cell">{{ partido2CuartosG1?.equipo_2?.nombre }}</td>
+                                            <td class="border-arriba"></td>
+                                            <td class="no-border"></td>
+                                            <td class="no-border"></td>
+                                            <td class="no-border"></td>
+                                            <td class="no-border"></td>
+                                            <td class="no-border"></td>
+                                            <td class="no-border"></td>
+                                            <td class="no-border"></td>
+                                            <td class="border-arriba"></td>
+                                            <td class="highlight-cell">{{ partido2CuartosG2?.equipo_2?.nombre }}</td>
+                                        </tr>
+                                    </ng-container>
+                                </ng-container>
+                            </tbody>
+                        </table>
+                    </div>
+                    <div class="container" *ngIf="tituloTabla !== 'Carnets Jugadores'">
+                        <div class="row justify-content-md-center">
+                            <div class="col form-group col-lg-2">
+                                <button (click)="generarReporte(tituloTabla)" class="btn btn-secondary">
+                                    <img src="../../../assets/img/theme/pdf .png" alt="Descargar PDF"
+                                        style="width: 25px; height: 25px; margin-right: 5px;">
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+            </div>
+        </div>
+    </div>
+</div>

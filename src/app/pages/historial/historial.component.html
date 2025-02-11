@@ -1,0 +1,64 @@
+<div class="header bg-gradient-danger pb-6 pt-5 pt-md-6">
+    <div class="container-fluid">
+        <div class="header-body">
+        </div>
+    </div>
+</div>
+<!-- Page content -->
+<div class="container-fluid mt--7">
+    <!-- Table -->
+    <!-- Dark table -->
+    <div class="row mt-5">
+        <div class="col">
+            <div class="card bg-default shadow">
+                <div class="card-header bg-transparent border-0 d-flex">
+                    <h3 class="text-white mb-0 me-auto"> Historial de Jugador </h3>
+                    <div class="col-md-4 text-right">
+                        <div class="form-group">
+                            <div class="input-group mb-4" >
+                                <div class="input-group-prepend">
+                                    <span class="input-group-text"><i class="ni ni-zoom-split-in"></i></span>
+                                </div>
+                                <input class="form-control" placeholder="Buscar por cédula" type="text"
+                                    [(ngModel)]="buscarJugador" (input)="filtrarDatos()">
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="table-responsive" >
+                    <table class="table align-items-center table-dark table-flush">
+                        <thead class="thead-dark">
+                            <tr>
+                                <th scope="col">Temporada</th>
+                                <th scope="col">Nombre completo</th>
+                                <th scope="col">Equipo</th>
+                                <th scope="col">Categoría</th>
+                                <th scope="col">Goles</th>
+                                <th scope="col">Amarillas</th>
+                                <th scope="col">Rojas</th>
+                            </tr>
+
+                        </thead>
+                        <tbody>
+                            <tr *ngFor="let item of datosFiltrados">
+                                <td>{{ item.temporada }}</td>
+                                <td>{{ item.nombres }} {{ item.apellidos }}</td>
+                                <td>{{ item.equipo }}</td>
+                                <td>{{ item.categoria }}</td>
+                                <td>{{ item.goles }}</td>
+                                <td>{{ item.amarillas }}</td>
+                                <td>{{ item.rojas }}</td>
+                            </tr>
+                            <tr *ngIf="datosFiltrados.length === 0">
+                                <td colspan="7" class="text-center">
+                                    No se encontraron resultados para la búsqueda.
+                                </td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

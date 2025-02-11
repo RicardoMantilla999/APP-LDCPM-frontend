@@ -1,0 +1,491 @@
+<div class="header bg-gradient-danger pb-6 pt-5 pt-md-6">
+    <div class="container-fluid">
+        <div class="header-body">
+            <!-- Card stats -->
+            <div class="row">
+                <div class="col">
+                    <div class="card card-stats mb-4 mb-xl-0" (click)="mostrarTabSorteo()">
+                        <div class="card-body">
+                            <div class="row">
+                                <div class="col">
+                                    <h5 class="card-title text-uppercase text-muted mb-0">SORTEO</h5>
+                                    <span class="h2 font-weight-bold mb-0"> </span>
+                                </div>
+                                <div class="col-auto">
+                                    <div class="icon icon-shape bg-danger text-white rounded-circle shadow">
+                                        <i class="ni ni-atom"></i>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="col">
+                    <div class="card card-stats mb-4 mb-xl-0" (click)="mostrarTabCalendario()">
+                        <div class="card-body">
+                            <div class="row">
+                                <div class="col">
+                                    <h5 class="card-title text-uppercase text-muted mb-0">CALENDARIO</h5>
+                                    <span class="h2 font-weight-bold mb-0"> </span>
+                                </div>
+                                <div class="col-auto">
+                                    <div class="icon icon-shape bg-warning text-white rounded-circle shadow">
+                                        <i class="ni ni-calendar-grid-58"></i>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="col">
+                    <div class="card card-stats mb-4 mb-xl-0" (click)="mostrarTabResultados()">
+                        <div class="card-body">
+                            <div class="row">
+                                <div class="col">
+                                    <h5 class="card-title text-uppercase text-muted mb-0">RESULTADOS</h5>
+                                    <span class="h2 font-weight-bold mb-0"> </span>
+                                </div>
+                                <div class="col-auto">
+                                    <div class="icon icon-shape bg-yellow text-white rounded-circle shadow">
+                                        <i class="ni ni-single-copy-04"></i>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+<!-- Page content -->
+<div class="container-fluid mt--7">
+    <!-- Table -->
+    <!-- Dark table -->
+    <div class="row mt-5">
+        <div class="col">
+            <div class="card bg-default shadow">
+                <div class="card-header bg-transparent border-0 d-flex">
+                    <h3 class="text-white mb-0 me-auto">{{tituloTabla}}</h3>
+                    <div class="col">
+
+                    </div>
+
+                    <div class="form-group col text-right" *ngIf="tituloTabla === 'Sorteo'" for="categoria">
+                        <select [(ngModel)]="categoriaSeleccionada" id="categoria" (change)="cargarEquipos()"
+                            class="form-control">
+                            <option [value]="null">Seleccione la Categorías</option>
+                            <option *ngFor="let categoria of categorias" [value]="categoria.id">
+                                {{ categoria.categoria }}
+                            </option>
+                        </select>
+                    </div>
+                    <div class="form-group col text-right" *ngIf="tituloTabla === 'Calendario' && !mostrarFormEditar"
+                        for="categoria">
+                        <select [(ngModel)]="categoriaSeleccionada" id="categoria" (change)="cargarFechas()"
+                            class="form-control">
+                            <option [value]="null">Seleccione la Categoría</option>
+                            <option *ngFor="let categoria of categorias" [value]="categoria.id">
+                                {{ categoria.categoria }}
+                            </option>
+                        </select>
+                    </div>
+
+                    <div class="form-group col text-right" *ngIf="tituloTabla === 'Calendario' && !mostrarFormEditar"
+                        for="fechas">
+                        <select [(ngModel)]="fechaSeleccionada" id="fechas" (change)="cargarPartidos()"
+                            class="form-control">
+                            <option [value]="null">Seleccione el Nro de Fecha</option>
+                            <option [value]="-1">Todas las fechas</option>
+                            <option *ngFor="let fecha of fechas" [value]="fecha">
+                                Fecha {{ fecha }}
+                            </option>
+                        </select>
+                    </div>
+                    <div class="form-group col text-right"
+                        *ngIf="tituloTabla === 'Resultados' && !mostrarFormEditarResultadosPartidos" for="categoria">
+                        <select [(ngModel)]="categoriaSeleccionada" id="categoria" (change)="cargarFechas()"
+                            class="form-control">
+                            <option [value]="null">Seleccione la Categoría</option>
+                            <option *ngFor="let categoria of categorias" [value]="categoria.id">
+                                {{ categoria.categoria }}
+                            </option>
+                        </select>
+                    </div>
+
+                    <div class="form-group col text-right"
+                        *ngIf="tituloTabla === 'Resultados' && !mostrarFormEditarResultadosPartidos" for="fechas">
+                        <select [(ngModel)]="fechaSeleccionada" id="fechas" (change)="cargarPartidos()"
+                            class="form-control">
+                            <option [value]="null">Seleccione el Nro de Fecha</option>
+                            <option [value]="-1">Todas las Fechas</option>
+                            <option *ngFor="let fecha of fechas" [value]="fecha">
+                                Fecha {{ fecha }}
+                            </option>
+                        </select>
+                    </div>
+
+                    <div *ngIf="tituloTabla === 'Sorteo'" class="form-group col text-right">
+                        <button class="btn btn-icon btn-3 btn-outline-primary" type="submit" (click)="sortear()">
+                            <span class="btn-inner--icon"><i class="ni ni-fat-add"></i></span>
+                            <span class="btn-inner--text">Sorteo Automatico</span>
+                        </button>
+
+                    </div>
+                    <div *ngIf="tituloTabla === 'Sorteo'" class="form-group col text-right">
+                        <button class="btn btn-icon btn btn-outline-success" type="submit" (click)="guardarSorteo()">
+                            <span class="btn-inner--icon"><i class="ni ni-fat-add"></i></span>
+                            <span class="btn-inner--text">Guardar</span>
+                        </button>
+                    </div>
+                    <div *ngIf="tituloTabla === 'Calendario' && !mostrarFormEditar" class="form-group col text-right">
+                        <button class="btn btn-icon btn-3 btn-outline-primary" type="submit"
+                            (click)="generarCalendario()">
+                            <span class="btn-inner--icon"><i class="ni ni-fat-add"></i></span>
+                            <span class="btn-inner--text">Generar Calendario</span>
+                        </button>
+                    </div>
+                    <div *ngIf="tituloTabla === 'Resultados' && mostrarFormEditarResultadosPartidos"
+                        class="form-group col text-right">
+                        <button class="btn btn-outline-danger" type="submit" (click)="regresar()">
+                            <span class="btn-inner--text">Regresar</span>
+                        </button>
+                    </div>
+                </div>
+
+
+                <div class="table-responsive" *ngIf="mostrarTabla">
+                    <div class="col">
+                        <h6 class="heading-small text-muted mb-4" *ngIf="tituloTabla === 'Calendario'">
+                            {{campeonatoGlobal.nombre}} ( FI:{{campeonatoGlobal.fecha_inicio}} -
+                            FI:{{campeonatoGlobal.fecha_fin}} )
+                            &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; Fase Actual: {{fase_actual.orden}} -
+                            {{fase_actual.nombre}}
+                        </h6>
+                    </div>
+
+                    <table class="table align-items-center table-dark table-flush">
+
+                        <thead class="thead-dark">
+                            <tr *ngIf="tituloTabla === 'Sorteo'">
+                                <th>#</th>
+                                <th scope="col">Nombre</th>
+                                <th scope="col">Nro Sorteo</th>
+                                <th scope="col"></th>
+                            </tr>
+                            <tr *ngIf="tituloTabla === 'Calendario'">
+                                <th>#</th>
+                                <th scope="col">Equipo 1</th>
+                                <th scope="col">Vs</th>
+                                <th scope="col">Equipo 2</th>
+                                <th scope="col">Fecha y Hora</th>
+                                <th scope="col">Opciones</th>
+                            </tr>
+                            <tr *ngIf="tituloTabla === 'Resultados' && mostrarTabla">
+                                <th>#</th>
+                                <th scope="col">Equipo 1</th>
+                                <th scope="col">Goles 1</th>
+                                <th scope="col">Equipo 2</th>
+                                <th scope="col">Goles 2</th>
+                                <th scope="col">Finalizado</th>
+                                <th scope="col">Observaciones</th>
+                                <th scope="col">Opciones</th>
+                            </tr>
+
+                        </thead>
+                        <tbody>
+                            <tr *ngFor="let item of datosTabla; let i = index">
+                                <td>{{ i + 1 }}</td>
+                                <th scope="row">
+                                    <div class="media align-items-center">
+                                        <div class="media-body">
+                                            <span class="mb-0 text-sm" *ngIf="tituloTabla === 'Sorteo'">{{item.nombre}}
+                                            </span>
+                                            <span class="mb-0 text-sm"
+                                                *ngIf="tituloTabla === 'Calendario'">{{item.equipo_1.nombre}}
+                                            </span>
+                                            <span class="mb-0 text-sm"
+                                                *ngIf="tituloTabla === 'Resultados' && mostrarTabla">{{item.equipo_1.nombre}}
+                                            </span>
+                                        </div>
+                                    </div>
+                                </th>
+                                <td *ngIf="tituloTabla === 'Sorteo'"> {{item.nro_sorteo}}</td>
+                                <td *ngIf="tituloTabla === 'Resultados' && mostrarTabla">
+                                    {{item.goles_1}}</td>
+
+                                <td class="text-right" *ngIf="tituloTabla === 'Sorteo'">
+                                    <div ngbDropdown placement="bottom-right">
+                                        <a class="btn btn-sm btn-icon-only text-light" ngbDropdownToggle>
+                                            <i class="fas fa-ellipsis-v"></i>
+                                        </a>
+                                        <div ngbDropdownMenu class=" dropdown-menu-right dropdown-menu-arrow">
+                                        </div>
+                                    </div>
+                                </td>
+                                <td *ngIf="tituloTabla === 'Calendario'"> vs </td>
+                                <th scope="row">
+                                    <div class="media align-items-center">
+                                        <div class="media-body">
+                                            <span class="mb-0 text-sm"
+                                                *ngIf="tituloTabla === 'Calendario'">{{item.equipo_2.nombre}}</span>
+                                        </div>
+                                        <div class="media-body">
+                                            <span class="mb-0 text-sm"
+                                                *ngIf="tituloTabla === 'Resultados' && mostrarTabla">{{item.equipo_2.nombre}}</span>
+                                        </div>
+                                    </div>
+                                </th>
+                                <td *ngIf="tituloTabla === 'Calendario'"> {{item.fecha}} - {{item.hora}} </td>
+                                <td *ngIf="tituloTabla === 'Resultados' && mostrarTabla">
+                                    {{item.goles_2}}</td>
+
+                                <td *ngIf="tituloTabla === 'Resultados' && mostrarTabla">
+                                    <div class="col text-center">
+                                        <label>
+                                            <input type="checkbox" [checked]="item.culminado"
+                                                (change)="finalizarPartido(item.id, $event.target.checked)" />
+                                            Finalizado
+                                        </label>
+                                    </div>
+                                </td>
+                                <td *ngIf="tituloTabla === 'Resultados' && mostrarTabla"> obs
+                                </td>
+                                <td class="text-right" *ngIf="tituloTabla === 'Calendario'">
+                                    <div ngbDropdown placement="bottom-right">
+                                        <a class="btn btn-sm btn-icon-only text-light" ngbDropdownToggle>
+                                            <i class="fas fa-ellipsis-v"></i>
+                                        </a>
+                                        <div ngbDropdownMenu class=" dropdown-menu-right dropdown-menu-arrow">
+                                            <a class="dropdown-item" href="javascript:void(0)"
+                                                (click)="formEditarPartido(item)">Editar</a>
+                                        </div>
+                                    </div>
+                                </td>
+                                <td class="text-right" *ngIf="tituloTabla === 'Resultados' && mostrarTabla">
+                                    <div ngbDropdown placement="bottom-right">
+                                        <a class="btn btn-sm btn-icon-only text-light" ngbDropdownToggle>
+                                            <i class="fas fa-ellipsis-v"></i>
+                                        </a>
+                                        <div ngbDropdownMenu class=" dropdown-menu-right dropdown-menu-arrow">
+                                            <a class="dropdown-item" href="javascript:void(0)"
+                                                [disabled]="item.culminado"
+                                                (click)="formEditarResultadosPartidos(item.id)">Editar</a>
+                                        </div>
+                                    </div>
+                                </td>
+                            </tr>
+                            <tr *ngIf="datosTabla.length === 0">
+                                <td colspan="8" class="text-center">
+                                    No hay datos disponibles
+                                </td>
+                            </tr>
+                        </tbody>
+                    </table>
+
+
+                </div>
+
+
+
+                <div *ngIf="mostrarFormEditar && tituloTabla === 'Calendario'">
+                    <ng-container>
+                        <!-- Formulario para editar Hora y Fecha de Partidos  -->
+                        <div class="card-body">
+                            <form [formGroup]="editarPartido" (ngSubmit)="asignarFechaHora()">
+                                <h6 class="heading-small text-muted mb-4">Asignar Fecha y Hora al Partido</h6>
+                                <div class="pl-lg-4">
+                                    <div class="row">
+                                        <!-- Campo para mostrar el Equipo 1 -->
+                                        <div class="col">
+                                            <div class="form-group">
+                                                <label class="form-control-label" for="equipo_1">Equipo 1</label>
+                                                <input type="text" id="equipo_1" class="form-control"
+                                                    formControlName="equipo_1" />
+                                            </div>
+                                        </div>
+
+                                        <!-- Campo para mostrar el Equipo 2 -->
+                                        <div class="col">
+                                            <div class="form-group">
+                                                <label class="form-control-label" for="equipo_2">Equipo 2</label>
+                                                <input type="text" id="equipo_2" class="form-control"
+                                                    formControlName="equipo_2" />
+                                            </div>
+                                        </div>
+
+                                        <!-- Campo para seleccionar la Fecha -->
+                                        <div class="col">
+                                            <div class="form-group">
+                                                <label class="form-control-label" for="fecha">Fecha</label>
+                                                <input type="date" id="fecha" class="form-control"
+                                                    formControlName="fecha" />
+                                            </div>
+                                        </div>
+
+                                        <!-- Campo para seleccionar la Hora -->
+                                        <div class="col">
+                                            <div class="form-group">
+                                                <label class="form-control-label" for="hora">Hora</label>
+                                                <select id="hora" class="form-control" formControlName="hora">
+                                                    <option value="null">Seleccione la hora</option>
+                                                    <option value="08:00">08:00</option>
+                                                    <option value="10:00">10:00</option>
+                                                    <option value="12:00">12:00</option>
+                                                    <option value="14:00">14:00</option>
+                                                    <option value="16:00">16:00</option>
+                                                    <option value="18:00">18:00</option>
+                                                </select>
+                                            </div>
+                                        </div>
+                                    </div>
+
+                                    <!-- Botón para guardar los cambios -->
+                                    <div *ngIf="mostrarFormEditar" class="col text-right">
+                                        <button type="submit" class="btn btn-outline-success">Guardar</button>
+                                        <a type="button" class="btn btn-outline-danger"
+                                            (click)="regresar()">Regresar</a>
+                                    </div>
+
+                                </div>
+                            </form>
+                        </div>
+                    </ng-container>
+                </div>
+
+
+                <div *ngIf="mostrarFormEditarResultadosPartidos && !mostrarTabla">
+                    <ng-container>
+                        <!-- Formulario para Agregar goles y amonestaciones  -->
+                        <div class="card-body">
+
+                            <div class="row justify-content-md-center lead">
+
+                                <a href="javascript:void(0)" class="avatar rounded-circle mr-3 align-items-center">
+                                    <img alt="Logo del equipo" [src]="equipo_1_logo"
+                                        alt="Logo del equipo" class="rounded-circle">
+                                </a>
+                                <div class="col-sm-3 text-right text-white h2">
+                                    {{ partido?.equipo_1?.nombre }}
+                                </div>
+                                <div class="col text-center text-white h1">{{ partido?.goles_1 }} - {{ partido?.goles_2
+                                    }}</div>
+                                <div class="col-sm-3 text-left text-white h2">{{ partido?.equipo_2?.nombre }}
+                                </div>
+                                <a href="javascript:void(0)" class="avatar rounded-circle mr-3 align-items-center">
+                                    <img alt="Logo del equipo" [src]="equipo_2_logo"
+                                        alt="Logo del equipo" class="rounded-circle">
+                                </a>
+
+                            </div>
+                            <div class="acciones">
+                                <div class="row">
+                                    <div class="col custom-control custom-radio mb-3 text-right">
+                                        <input class="custom-control-input" type="radio" name="custom-radio-2"
+                                            [(ngModel)]="accionActual" value="goles" id="checkRoles" />
+                                        <label class="custom-control-label" for="checkRoles">Agregar Goles</label>
+                                    </div>
+                                    <div class="col custom-control custom-radio mb-3">
+                                        <input class="custom-control-input" type="radio" name="custom-radio-2"
+                                            [(ngModel)]="accionActual" value="tarjetas" id="checkTarjetas" />
+                                        <label class="custom-control-label" for="checkTarjetas">Agregar Tarjetas</label>
+                                    </div>
+                                    <div class="col"></div>
+                                </div>
+                            </div>
+                            <table class="table align-items-center table-dark table-flush">
+                                <tr>
+                                    <!-- Equipo 1 -->
+                                    <td>
+                                        <table class="table align-items-center table-dark table-flush">
+                                            <thead class="thead-dark">
+                                                <tr>
+                                                    <th>#</th>
+                                                    <th>Nombre Completo</th>
+                                                    <th *ngIf="accionActual === 'goles'">Goles</th>
+                                                    <th *ngIf="accionActual === 'tarjetas'">Tarjetas</th>
+                                                    <th>Opción</th>
+                                                </tr>
+                                            </thead>
+                                            <tbody>
+                                                <tr *ngFor="let jugador of jugadoresEquipo1">
+                                                    <td>{{ jugador.dorsal }}</td>
+                                                    <td>{{ jugador.apellidos }} {{ jugador.nombres }}</td>
+                                                    <td *ngIf="accionActual === 'goles'">
+                                                        <input type="number" [(ngModel)]="jugador.goles" min="0"
+                                                            class="form-control" />
+                                                    </td>
+                                                    <td *ngIf="accionActual === 'tarjetas'">
+                                                        <select [(ngModel)]="jugador.tarjeta.tipo" class="form-control">
+                                                            <option value="TA">Amarilla</option>
+                                                            <option value="DA">Doble Amarilla</option>
+                                                            <option value="TR">Roja</option>
+                                                        </select>
+                                                    </td>
+                                                    <td>
+                                                        <button class="btn btn-primary btn-sm"
+                                                            (click)="guardarAccion(jugador, partido.id, jugador.equipo.id)">
+                                                            Añadir
+                                                        </button>
+                                                    </td>
+                                                </tr>
+                                            </tbody>
+                                        </table>
+                                    </td>
+                                    <!-- Equipo 2 -->
+                                    <td>
+                                        <table class="table align-items-center table-dark table-flush">
+                                            <thead class="thead-dark">
+                                                <tr>
+                                                    <th>#</th>
+                                                    <th>Nombre Completo</th>
+                                                    <th *ngIf="accionActual === 'goles'">Goles</th>
+                                                    <th *ngIf="accionActual === 'tarjetas'">Tarjetas</th>
+                                                    <th>Opción</th>
+                                                </tr>
+                                            </thead>
+                                            <tbody>
+                                                <tr *ngFor="let jugador of jugadoresEquipo2">
+                                                    <td>{{ jugador.dorsal }}</td>
+                                                    <td>{{ jugador.apellidos }} {{ jugador.nombres }}</td>
+                                                    <td *ngIf="accionActual === 'goles'">
+                                                        <input type="number" [(ngModel)]="jugador.goles" min="0"
+                                                            class="form-control" />
+                                                    </td>
+                                                    <td *ngIf="accionActual === 'tarjetas'">
+                                                        <select [(ngModel)]="jugador.tarjeta.tipo" class="form-control">
+                                                            <option value="TA">Amarilla</option>
+                                                            <option value="DA">Doble Amarilla</option>
+                                                            <option value="TR">Roja</option>
+                                                        </select>
+                                                    </td>
+                                                    <td>
+                                                        <button class="btn btn-primary btn-sm"
+                                                            (click)="guardarAccion(jugador, partido.id, jugador.equipo.id)">
+                                                            Añadir
+                                                        </button>
+                                                    </td>
+                                                </tr>
+
+                                            </tbody>
+                                        </table>
+                                    </td>
+                                </tr>
+                            </table>
+                        </div>
+                    </ng-container>
+                </div>
+                <div class="container" *ngIf="!mostrarFormEditarResultadosPartidos">
+                    <div class="row justify-content-md-center">
+                        <div class="col form-group col-lg-2">
+                            <button (click)="generarReporte(tituloTabla)" class="btn btn-secondary">
+                                <img src="../../../assets/img/theme/pdf .png" alt="Descargar PDF"
+                                    style="width: 25px; height: 25px; margin-right: 5px;">
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

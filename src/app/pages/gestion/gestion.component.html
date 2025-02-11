@@ -1,0 +1,1134 @@
+<div class="header bg-gradient-danger pb-6 pt-5 pt-md-6">
+    <div class="container-fluid">
+        <div class="header-body">
+            <!-- Card stats -->
+            <div class="row">
+                <div class="col">
+                    <div class="card card-stats mb-4 mb-xl-0" (click)="mostrarDetalles('Categorías')">
+                        <div class="card-body">
+                            <div class="row">
+                                <div class="col">
+                                    <h5 class="card-title text-uppercase text-muted mb-0">Categorías</h5>
+                                    <span class="h2 font-weight-bold mb-0"> {{totalCategorias}} </span>
+                                </div>
+                                <div class="col-auto">
+                                    <div class="icon icon-shape bg-danger text-white rounded-circle shadow">
+                                        <i class="ni ni-trophy"></i>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="col">
+                    <div class="card card-stats mb-4 mb-xl-0" (click)="mostrarDetalles('Equipos')">
+                        <div class="card-body">
+                            <div class="row">
+                                <div class="col">
+                                    <h5 class="card-title text-uppercase text-muted mb-0">Equipos</h5>
+                                    <span class="h2 font-weight-bold mb-0"> {{totalEquipos}} </span>
+                                </div>
+                                <div class="col-auto">
+                                    <div class="icon icon-shape bg-warning text-white rounded-circle shadow">
+                                        <i class="fas fa-users"></i>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="col">
+                    <div class="card card-stats mb-4 mb-xl-0" (click)="mostrarDetalles('Jugadores')">
+                        <div class="card-body">
+                            <div class="row">
+                                <div class="col">
+                                    <h5 class="card-title text-uppercase text-muted mb-0">Jugadores</h5>
+                                    <span class="h2 font-weight-bold mb-0"> {{totalJugadores}} </span>
+                                </div>
+                                <div class="col-auto">
+                                    <div class="icon icon-shape bg-yellow text-white rounded-circle shadow">
+                                        <i class="ni ni-single-02"></i>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="col">
+                    <div class="card card-stats mb-4 mb-xl-0" (click)="mostrarDetalles('Dirigentes')">
+                        <div class="card-body">
+                            <div class="row">
+                                <div class="col">
+                                    <h5 class="card-title text-uppercase text-muted mb-0">Dirigentes</h5>
+                                    <span class="h2 font-weight-bold mb-0"> {{totalDirigentes}} </span>
+                                </div>
+                                <div class="col-auto">
+                                    <div class="icon icon-shape bg-info text-white rounded-circle shadow">
+                                        <i class="fas fa-percent"></i>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="col">
+                    <div class="card card-stats mb-4 mb-xl-0" (click)="mostrarDetalles('Arbitros')">
+                        <div class="card-body">
+                            <div class="row">
+                                <div class="col">
+                                    <h5 class="card-title text-uppercase text-muted mb-0">Árbitros</h5>
+                                    <span class="h2 font-weight-bold mb-0"> {{totalArbitros}} </span>
+                                </div>
+                                <div class="col-auto">
+                                    <div class="icon icon-shape bg-danger text-white rounded-circle shadow">
+                                        <i class="fas fa-chart-bar"></i>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+<!-- Page content -->
+<div class="container-fluid mt--7">
+    <!-- Table -->
+    <!-- Dark table -->
+    <div class="row mt-5">
+        <div class="col">
+            <div class="card bg-default shadow">
+                <div class="card-header bg-transparent border-0 d-flex">
+                    <h3 class="text-white mb-0 me-auto">{{tituloTabla}}</h3>
+
+                    <div *ngIf="tituloTabla === 'Jugadores' && mostrarTabla" class="col text-right">
+                        <button class="btn btn-icon btn-3 btn-outline-success" type="submit"
+                            (click)="mostrarFormularioImportar()">
+                            <span class="btn-inner--icon"><img src="../../../assets/img/theme/excel.png" alt="Importar"
+                                style="width: 25px; height: 25px; margin-right: 5px;"></span>
+                            <span class="btn-inner--text">IMPORTAR EXCEL</span>
+                        </button>
+
+                    </div>
+                    <div *ngIf="mostrarTabla" class="col text-right">
+                        <button class="btn btn-icon btn-3 btn-outline-primary" type="submit"
+                            (click)="mostrarFormulario(tituloTabla)">
+                            <span class="btn-inner--icon"><i class="ni ni-fat-add"></i></span>
+                            <span class="btn-inner--text">NUEVO</span>
+                        </button>
+
+                    </div>
+                    <div class="form-group" *ngIf="tituloTabla === 'Equipos' && mostrarTabla">
+                        <select [(ngModel)]="categoriaSeleccionada" (change)="mostrarDetalles('Equipos')"
+                            class="form-control">
+                            <option [value]="-1">Todas las categorías</option>
+                            <option *ngFor="let categoria of categorias" [value]="categoria.id">
+                                {{ categoria.categoria }}
+                            </option>
+                        </select>
+                    </div>
+                    <div class="form-group" *ngIf="tituloTabla === 'Jugadores' && mostrarTabla">
+                        <select [(ngModel)]="equipoSeleccionado" (change)="mostrarDetalles('Jugadores')"
+                            class="form-control">
+                            <option [value]="null">Seleccione el Equipos</option>
+                            <option [value]="-1">Todos los Equipos</option>
+                            <option *ngFor="let equipo of equipos" [value]="equipo.id">
+                                {{ equipo.nombre }} - {{equipo.categoria.categoria}}
+                            </option>
+                        </select>
+                    </div>
+                    <!-- para crear-->
+                    <div *ngIf="mostrarForm" class="col text-right">
+                        <a type="button" class="btn btn-outline-success" (click)="crearObjeto(tituloTabla)">CREAR</a>
+                        <a type="button" class="btn btn-outline-danger"
+                            (click)="mostrarDetalles(tituloTabla)">CANCELAR</a>
+                    </div>
+                    <!-- para guardar cambios EDITAR -->
+                    <div *ngIf="mostrarFormEditar" class="col text-right">
+                        <a type="button" class="btn btn-outline-success" (click)="guardarCambios(tituloTabla)">GUARDAR
+                            CAMBIOS </a>
+                        <a type="button" class="btn btn-outline-danger"
+                            (click)="mostrarDetalles(tituloTabla)">CANCELAR</a>
+                    </div>
+                </div>
+                <div class="col-10">
+
+                </div>
+
+                <div class="table-responsive" *ngIf="mostrarTabla">
+                    <table class="table align-items-center table-dark table-flush">
+                        <thead class="thead-dark">
+                            <tr *ngIf="tituloTabla === 'Categorías'">
+                                <th scope="col">Categoría</th>
+                                <th scope="col">Descripción</th>
+                                <th scope="col">Opciones</th>
+                            </tr>
+                            <tr *ngIf="tituloTabla === 'Equipos'">
+                                <th scope="col">Logo</th>
+                                <th scope="col">Nombre</th>
+                                <th scope="col">Uniforme</th>
+                                <th scope="col">Categoría</th>
+                                <th scope="col">Fecha fundacion</th>
+                                <th scope="col">Dirigente</th>
+                                <th scope="col">Opciones</th>
+                            </tr>
+                            <tr *ngIf="tituloTabla === 'Dirigentes'">
+                                <th scope="col">Cedula</th>
+                                <th scope="col">Nombre completo</th>
+                                <th scope="col">Lugar Nacimiento</th>
+                                <th scope="col">Fecha Nacimiento</th>
+                                <th scope="col">Suspendido</th>
+                                <th scope="col">Opciones</th>
+                            </tr>
+                            <tr *ngIf="tituloTabla === 'Jugadores'">
+                                <th scope="col">Cedula</th>
+                                <th scope="col">Nombre completo</th>
+                                <th scope="col">Fecha Nacimiento</th>
+                                <th scope="col">Origen</th>
+                                <th scope="col">#Dorsal</th>
+                                <th scope="col">Foto</th>
+                                <th scope="col">Opciones</th>
+                            </tr>
+                            <tr *ngIf="tituloTabla === 'Arbitros'">
+                                <th scope="col">Cedula</th>
+                                <th scope="col">Nombre completo</th>
+                                <th scope="col">Telefono</th>
+                                <th scope="col">Email</th>
+                                <th scope="col">Direccion</th>
+                                <th scope="col">Opciones</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr *ngFor="let item of datosTabla">
+                                <th *ngIf="tituloTabla === 'Equipos'">
+                                    <div class="media align-items-center">
+                                        <a href="javascript:void(0)" class="avatar rounded-circle mr-3">
+                                            <img alt="Logo del equipo"
+                                                [src]="item.logo"
+                                                alt="Logo del equipo">
+                                        </a>
+                                    </div>
+                                </th>
+                                <th scope="row">
+                                    <div class="media align-items-center">
+                                        <div class="media-body">
+                                            <span class="mb-0 text-sm"
+                                                *ngIf="tituloTabla === 'Categorías'">{{item.categoria
+                                                }}</span>
+                                            <span class="mb-0 text-sm" *ngIf="tituloTabla === 'Equipos'">{{item.nombre
+                                                }}</span>
+                                            <span class="mb-0 text-sm" *ngIf="tituloTabla === 'Jugadores'">{{item.cedula
+                                                }}</span>
+                                            <span class="mb-0 text-sm"
+                                                *ngIf="tituloTabla === 'Dirigentes'">{{item.cedula
+                                                }}</span>
+                                            <span class="mb-0 text-sm" *ngIf="tituloTabla === 'Arbitros'">{{item.cedula
+                                                }}</span>
+                                        </div>
+                                    </div>
+                                </th>
+                                <td *ngIf="tituloTabla === 'Categorías'">{{ item.descripcion }}
+
+
+
+                                <td *ngIf="tituloTabla === 'Equipos'">{{ item.uniforme }} </td>
+                                <td *ngIf="tituloTabla === 'Equipos'">{{ item.categoria?.categoria}} </td>
+                                <td *ngIf="tituloTabla === 'Equipos'">{{ item.fecha_fundacion }} </td>
+                                <td *ngIf="tituloTabla === 'Equipos'">{{ item.dirigente?.nombres}} </td>
+
+
+                                <td *ngIf="tituloTabla === 'Dirigentes'">{{ item.nombres }} {{ item.apellidos }} </td>
+                                <td *ngIf="tituloTabla === 'Dirigentes'">{{ item.lugar_nacimiento }} </td>
+                                <td *ngIf="tituloTabla === 'Dirigentes'">{{ item.fecha_nacimiento }} </td>
+                                <td *ngIf="tituloTabla === 'Dirigentes'">{{ item.suspendido }} </td>
+
+
+                                <td *ngIf="tituloTabla === 'Jugadores'">{{ item.apellidos }} {{ item.nombres }}</td>
+                                <td *ngIf="tituloTabla === 'Jugadores'">{{ item.fecha_nacimiento }} </td>
+                                <td *ngIf="tituloTabla === 'Jugadores'">{{ item.origen }} </td>
+                                <td *ngIf="tituloTabla === 'Jugadores'">{{ item.dorsal }} </td>
+                                <td *ngIf="tituloTabla === 'Jugadores'">
+                                    <div class="media align-items-center">
+                                        <a href="javascript:void(0)" class="avatar rounded-circle mr-3">
+                                            <img alt="Logo del equipo"
+                                                [src]="item.foto"
+                                                alt="Logo del equipo">
+                                        </a>
+                                    </div>
+                                </td>
+
+                                <td *ngIf="tituloTabla === 'Arbitros'">{{ item.nombres }} {{ item.apellidos }} </td>
+                                <td *ngIf="tituloTabla === 'Arbitros'">{{ item.telefono }} </td>
+                                <td *ngIf="tituloTabla === 'Arbitros'">{{ item.email }} </td>
+                                <td *ngIf="tituloTabla === 'Arbitros'">{{ item.direccion }} </td>
+
+                                <td class="text-right">
+                                    <div ngbDropdown placement="bottom-right">
+                                        <a class="btn btn-sm btn-icon-only text-light" ngbDropdownToggle>
+                                            <i class="fas fa-ellipsis-v"></i>
+                                        </a>
+                                        <div ngbDropdownMenu class=" dropdown-menu-right dropdown-menu-arrow">
+                                            <a class="dropdown-item" href="javascript:void(0)"
+                                                (click)="showFormEdit(item)">Editar</a>
+                                            <a class="dropdown-item" href="javascript:void(0)"
+                                                (click)="eliminarObjeto(item)">Eliminar</a>
+                                        </div>
+                                    </div>
+                                </td>
+                            </tr>
+                            <tr *ngIf="datosTabla.length === 0">
+                                <td colspan="6" class="text-center">
+                                    No hay datos disponibles
+                                </td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+
+
+                <!-- FORMULARIO PARA IMPORTAR EXCEL -->
+                <div *ngIf="mostrarFormImportar">
+
+                    <ng-container>
+
+                        <div class="card-body">
+                            <form class="needs-validation" (ngSubmit)="onSubmit()" novalidate>
+                                <h6 class="heading-small text-muted mb-4">Importar Lista de Jugadores</h6>
+                                <div class="pl-lg-4">
+                                    <div class="row">
+                                        <div class="col">
+                                            <div class="form-group">
+                                                <label for="file">Seleccione el Equipo</label>
+                                                <select [(ngModel)]="equipoSeleccionado" class="form-control">
+                                                    <option [value]="null">Seleccione el Equipos</option>
+                                                    <option [value]="-1">Todos los Equipos</option>
+                                                    <option *ngFor="let equipo of equipos" [value]="equipo.id">
+                                                        {{ equipo.nombre }} - {{equipo.categoria.categoria}}
+                                                    </option>
+                                                </select>
+
+                                            </div>
+                                        </div>
+                                        <div class="col">
+                                            <div class="form-group">
+                                                <label for="file">Seleccionar archivo Excel</label>
+                                                <input type="file" id="file" (change)="onFileChange($event)"
+                                                    accept=".xlsx, .xls" class="form-control" />
+                                            </div>
+
+                                        </div>
+                                        <div class="col">
+
+                                        </div>
+                                    </div>
+                                    <label for="file"> </label>
+                                    <button type="submit" class="btn btn-icon btn-3 btn-outline-success" [disabled]="!file">
+                                        Importar
+                                    </button>
+                                </div>
+
+                            </form>
+                        </div>
+                    </ng-container>
+                </div>
+
+
+                <!--   FORMULARIOS PARA CREAR      -->
+                <div *ngIf="!mostrarTabla">
+
+
+
+                    <ng-container *ngIf="formularioActual === 'Categorías'">
+                        <!-- Formulario para crear Categorías -->
+
+                        <div class="card-body">
+                            <form class="needs-validation" [formGroup]="nuevaCat" (ngSubmit)="postForm(nuevaCat.value)"
+                                novalidate>
+                                <h6 class="heading-small text-muted mb-4">Crear nueva categoría</h6>
+                                <div class="pl-lg-4">
+                                    <div class="row">
+                                        <div class="col">
+                                            <div class="form-group">
+                                                <label class="form-control-label"
+                                                    for="input-first-name">Categoría</label>
+                                                <input type="text" id="categoria"
+                                                    class="form-control form-control-alternative"
+                                                    placeholder="Categoría" formControlName="categoria" required>
+                                                <div class="invalid-tooltip">
+                                                    Please choose a unique and valid username.
+                                                </div>
+                                            </div>
+
+                                        </div>
+                                        <div class="col">
+                                            <div class="form-group">
+                                                <label class="form-control-label"
+                                                    for="input-last-name">Descripción</label>
+                                                <input type="text" id="descripcion"
+                                                    class="form-control form-control-alternative"
+                                                    placeholder="Descripcion" formControlName="descripcion">
+                                            </div>
+                                        </div>
+                                        <div class="col">
+
+                                        </div>
+                                    </div>
+
+                                </div>
+
+                            </form>
+                        </div>
+                    </ng-container>
+
+                    <ng-container *ngIf="formularioActual === 'Equipos'">
+                        <!-- Formulario  para  crear Equipos -->
+                        <div class="card-body">
+                            <form [formGroup]="nuevoEquipo" (ngSubmit)="postForm(nuevoEquipo.value)">
+                                <h6 class="heading-small text-muted mb-4">Crear nuevo equipo</h6>
+                                <div class="pl-lg-4">
+                                    <div class="row">
+                                        <div class="col">
+                                            <div class="form-group">
+                                                <label class="form-control-label" for="input-first-name">Nombre</label>
+                                                <input type="text" id="nombre"
+                                                    class="form-control form-control-alternative"
+                                                    placeholder="Club Deportivo ..." formControlName="nombre">
+                                            </div>
+                                        </div>
+                                        <div class="col">
+                                            <div class="form-group">
+                                                <label class="form-control-label" for="input-last-name">Uniforme</label>
+                                                <input type="text" id="input-last-name"
+                                                    class="form-control form-control-alternative"
+                                                    placeholder="Blanco y rojo" formControlName="uniforme">
+                                            </div>
+                                        </div>
+                                        <div class="col">
+                                            <div class="form-group">
+                                                <label for="logo">Logo del Equipo:</label>
+                                                <input type="file" (change)="onFileSelected($event)" accept="image/*" />
+                                            </div>
+                                        </div>
+
+
+                                    </div>
+                                    <div class="row">
+                                        <div class="col">
+                                            <div class="form-group">
+                                                <label class="form-control-label" for="fecha_fundacion">Fecha de
+                                                    Fundación</label>
+                                                <input type="date" class="form-control form-control-alternative"
+                                                    id="fecha_fundacion" formControlName="fecha_fundacion">
+
+                                            </div>
+                                        </div>
+                                        <div class="col">
+                                            <div class="form-group">
+                                                <label class="form-control-label" for="select-dirigente">Seleccione el
+                                                    Dirigente</label>
+                                                <select id="select-dirigente"
+                                                    class="form-control form-control-alternative"
+                                                    formControlName="dirigente">
+                                                    <option *ngFor="let dirigente of dirigentes" [value]="dirigente.id">
+                                                        {{ dirigente.nombres }} {{ dirigente.apellidos }}
+                                                    </option>
+                                                </select>
+                                            </div>
+                                        </div>
+                                        <div class="col">
+                                            <div class="form-group">
+                                                <label class="form-control-label" for="select-categoria">Seleccione la
+                                                    Categoría</label>
+                                                <select id="select-categoria"
+                                                    class="form-control form-control-alternative"
+                                                    formControlName="categoria">
+                                                    <option *ngFor="let categoria of categorias" [value]="categoria.id">
+                                                        {{ categoria.categoria }} - {{categoria.descripcion}}
+                                                    </option>
+                                                </select>
+                                            </div>
+                                        </div>
+                                        <div class="col">
+                                        </div>
+                                    </div>
+                                </div>
+                            </form>
+                        </div>
+                    </ng-container>
+
+                    <ng-container *ngIf="formularioActual === 'Jugadores'">
+                        <!-- Formulario para crear Jugadores -->
+                        <div class="card-body">
+                            <form [formGroup]="nuevoJugador" (ngSubmit)="postForm(nuevoJugador.value)">
+                                <h6 class="heading-small text-muted mb-4">Crear nuevo Jugador</h6>
+                                <div class="pl-lg-4">
+                                    <div class="row">
+                                        <div class="col">
+                                            <div class="form-group">
+                                                <label class="form-control-label" for="cedula">Cédula</label>
+                                                <input type="text" id="cedula"
+                                                    class="form-control form-control-alternative"
+                                                    placeholder="1234567890" formControlName="cedula">
+                                            </div>
+                                        </div>
+                                        <div class="col">
+                                            <div class="form-group">
+                                                <label class="form-control-label" for="nombres">Nombres</label>
+                                                <input type="text" id="nombres"
+                                                    class="form-control form-control-alternative"
+                                                    placeholder="Nombre1 Nombre2" formControlName="nombres">
+                                            </div>
+                                        </div>
+                                        <div class="col">
+                                            <div class="form-group">
+                                                <label class="form-control-label" for="apellidos">Apellidos</label>
+                                                <input type="text" id="apellidos"
+                                                    class="form-control form-control-alternative"
+                                                    placeholder="Apellido1 Apellido2" formControlName="apellidos">
+                                            </div>
+                                        </div>
+                                        <div class="col">
+                                            <div class="form-group">
+                                                <label class="form-control-label" for="dorsal">Dorsal</label>
+                                                <input type="number" id="dorsal"
+                                                    class="form-control form-control-alternative" placeholder="10"
+                                                    formControlName="dorsal">
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="row">
+
+                                        <div class="col">
+                                            <div class="form-group">
+                                                <label class="form-control-label" for="fecha">Fecha de
+                                                    nacimiento</label>
+                                                <input type="date" class="form-control form-control-alternative"
+                                                    id="fecha" formControlName="fecha_nacimiento">
+                                            </div>
+                                        </div>
+                                        <div class="col">
+                                            <div class="form-group">
+                                                <label class="form-control-label" for="canton">Cantón juega</label>
+                                                <input type="text" id="canton"
+                                                    class="form-control form-control-alternative"
+                                                    placeholder="Pedro Moncayo" formControlName="canton_juega">
+                                            </div>
+                                        </div>
+                                        <div class="col">
+                                            <div class="form-group">
+                                                <label class="form-control-label" for="direccion">Direccion</label>
+                                                <input type="text" id="direccion"
+                                                    class="form-control form-control-alternative"
+                                                    placeholder="Quito, Ecuador" formControlName="direccion">
+                                            </div>
+                                        </div>
+                                        <div class="col">
+                                            <div class="form-group">
+                                                <label class="form-control-label" for="telefono">Teléfono</label>
+                                                <input type="text" id="telefono"
+                                                    class="form-control form-control-alternative"
+                                                    placeholder="0987654321" formControlName="telefono">
+                                            </div>
+                                        </div>
+
+                                    </div>
+
+                                    <div class="row">
+                                        <div class="col">
+                                            <div class="form-group">
+                                                <label class="form-control-label" for="email">Email</label>
+                                                <input type="text" id="email"
+                                                    class="form-control form-control-alternative"
+                                                    placeholder="ejemplo@hotmail.com" formControlName="email">
+                                            </div>
+                                        </div>
+                                        <div class="col">
+                                            <div class="form-group">
+                                                <label class="form-control-label" for="origen">Origen</label>
+                                                <select class="form-control" id="origen" formControlName="origen">
+                                                    <option value="Nacional">Nacional</option>
+                                                    <option value="Extranjero">Extranjero</option>
+                                                </select>
+                                            </div>
+                                        </div>
+                                        <div class="col">
+                                            <div class="form-group">
+                                                <label for="logo">Foto del Jugador:</label>
+                                                <input type="file" (change)="onFileSelected($event)" accept="image/*" />
+                                            </div>
+                                        </div>
+
+                                        <div class="col">
+                                            <div class="form-group">
+                                                <label class="form-control-label" for="equipo">Seleccione el
+                                                    Equipo</label>
+                                                <select [(ngModel)]="equipoSeleccionado" id="equipo"
+                                                    class="form-control form-control-alternative"
+                                                    formControlName="equipo">
+                                                    <option *ngFor="let equipo of equipos" [ngValue]="equipo.id">
+                                                        {{ equipo.nombre }}
+                                                    </option>
+                                                </select>
+                                            </div>
+                                        </div>
+
+                                    </div>
+                                </div>
+                            </form>
+                        </div>
+                    </ng-container>
+                    <!--    FORMULARIO PARA CREAR DIRIGENTE       -->
+
+                    <ng-container *ngIf="formularioActual === 'Dirigentes'">
+                        <div class="card-body">
+                            <form [formGroup]="nuevoDirigente" (ngSubmit)="postForm(nuevoDirigente.value)">
+                                <h6 class="heading-small text-muted mb-4">Crear nuevo Dirigente</h6>
+                                <div class="pl-lg-4">
+                                    <div class="row">
+                                        <div class="col">
+                                            <div class="form-group">
+                                                <label class="form-control-label" for="input-first-name">Cédula</label>
+                                                <input type="text" id="input-first-name"
+                                                    class="form-control form-control-alternative"
+                                                    placeholder="1234567890" formControlName="cedula">
+                                            </div>
+                                        </div>
+                                        <div class="col">
+                                            <div class="form-group">
+                                                <label class="form-control-label" for="input-last-name">Nombres</label>
+                                                <input type="text" id="nombres"
+                                                    class="form-control form-control-alternative"
+                                                    placeholder="Nombre1 Nombre2" formControlName="nombres">
+                                            </div>
+                                        </div>
+                                        <div class="col">
+                                            <div class="form-group">
+                                                <label class="form-control-label"
+                                                    for="input-last-name">Apellidos</label>
+                                                <input type="text" id="apellidos"
+                                                    class="form-control form-control-alternative"
+                                                    placeholder="Apellido1 Apellido2" formControlName="apellidos">
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="row">
+                                        <div class="col">
+                                            <div class="form-group">
+                                                <label class="form-control-label" for="input-last-name">Teléfono</label>
+                                                <input type="text" id="telefono"
+                                                    class="form-control form-control-alternative"
+                                                    placeholder="0987654321" formControlName="telefono">
+                                            </div>
+                                        </div>
+                                        <div class="col">
+                                            <div class="form-group">
+                                                <label class="form-control-label" for="input-last-name">Lugar de
+                                                    nacimiento</label>
+                                                <input type="text" id="lugar_nacimiento"
+                                                    class="form-control form-control-alternative"
+                                                    placeholder="Quito, Ecuador" formControlName="lugar_nacimiento">
+                                            </div>
+                                        </div>
+                                        <div class="col">
+                                            <div class="form-group">
+                                                <label class="form-control-label" for="fecha">Fecha de
+                                                    nacimiento</label>
+                                                <input type="date" class="form-control form-control-alternative"
+                                                    id="fecha" formControlName="fecha_nacimiento">
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <!--
+                                        <div class="row">
+                                            <div class="col-lg-6">
+                                                <div class="form-group">
+                                                    <label class="form-control-label"
+                                                        for="input-suspendido">Suspendido</label>
+                                                    <input type="checkbox" id="suspendido" class="form-check-input"
+                                                        [(ngModel)]="suspendido" formControlName="suspendido">
+                                                </div>
+                                            </div>
+                                        </div>
+                                    
+                                    -->
+                                </div>
+                            </form>
+                        </div>
+                    </ng-container>
+
+                    <ng-container *ngIf="formularioActual === 'Arbitros'">
+                        <!-- Formulario para crear Arbitros -->
+                        <div class="card-body">
+                            <form [formGroup]="nuevoArbitro" (ngSubmit)="postForm(nuevoArbitro.value)">
+                                <h6 class="heading-small text-muted mb-4">Crear nuevo Árbitros</h6>
+                                <div class="pl-lg-4">
+                                    <div class="row">
+                                        <div class="col">
+                                            <div class="form-group">
+                                                <label class="form-control-label" for="input-first-name">Cédula</label>
+                                                <input type="text" id="input-first-name"
+                                                    class="form-control form-control-alternative"
+                                                    placeholder="1234567890" formControlName="cedula">
+                                            </div>
+                                        </div>
+                                        <div class="col">
+                                            <div class="form-group">
+                                                <label class="form-control-label" for="input-last-name">Nombres</label>
+                                                <input type="text" id="input-last-name"
+                                                    class="form-control form-control-alternative"
+                                                    placeholder="Nombre1 Nombre2" formControlName="nombres">
+                                            </div>
+                                        </div>
+                                        <div class="col">
+                                            <div class="form-group">
+                                                <label class="form-control-label"
+                                                    for="input-last-name">Apellidos</label>
+                                                <input type="text" id="input-last-name"
+                                                    class="form-control form-control-alternative"
+                                                    placeholder="Apellido1 Apellido2" formControlName="apellidos">
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="row">
+                                        <div class="col">
+                                            <div class="form-group">
+                                                <label class="form-control-label" for="input-last-name">Telefono</label>
+                                                <input type="text" id="input-last-name"
+                                                    class="form-control form-control-alternative"
+                                                    placeholder="0987654321" formControlName="telefono">
+                                            </div>
+                                        </div>
+                                        <div class="col">
+                                            <div class="form-group">
+                                                <label class="form-control-label" for="input-email">Email</label>
+                                                <input type="email" id="input-email"
+                                                    class="form-control form-control-alternative"
+                                                    placeholder="jesse@example.com" formControlName="email">
+                                            </div>
+                                        </div>
+                                        <div class="col">
+                                            <div class="form-group">
+                                                <label class="form-control-label"
+                                                    for="input-last-name">Direccion</label>
+                                                <input type="text" id="input-last-name"
+                                                    class="form-control form-control-alternative"
+                                                    placeholder="Direccion" formControlName="direccion">
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </form>
+                        </div>
+                    </ng-container>
+                </div>
+
+                <!-- FORMULARIO PARA EDITAR-->
+
+                <div *ngIf="mostrarFormEditar">
+                    <ng-container *ngIf="tituloTabla === 'Categorías'">
+                        <!-- Formulario para editar Categorías -->
+                        <div class="card-body">
+                            <form [formGroup]="editarCategoria" (ngSubmit)="postForm(editarCategoria.value)">
+                                <h6 class="heading-small text-muted mb-4">Editar categoría con ID : {{
+                                    editarCategoria.id }} </h6>
+                                <div class="pl-lg-4">
+                                    <div class="row">
+                                        <div class="col">
+                                            <div class="form-group">
+                                                <label class="form-control-label" for="categoria">Categoría</label>
+                                                <input type="text" id="categoria" class="form-control"
+                                                    placeholder="Categoría" formControlName="categoria">
+                                            </div>
+                                        </div>
+                                        <div class="col">
+                                            <div class="form-group">
+                                                <label class="form-control-label" for="descripcion">Descripción</label>
+                                                <input type="text" id="descripcion" class="form-control"
+                                                    placeholder="Descripcion" formControlName="descripcion">
+                                            </div>
+                                        </div>
+                                        <div class="col">
+
+                                        </div>
+                                    </div>
+                                </div>
+                            </form>
+
+                        </div>
+                    </ng-container>
+
+                    <ng-container *ngIf="tituloTabla === 'Equipos'">
+                        <!-- Formulario para editar Equipos -->
+                        <div class="card-body">
+                            <form [formGroup]="editarEquipo" (ngSubmit)="postForm(editarEquipo.value)">
+                                <h6 class="heading-small text-muted mb-4">Editar Equipo con ID: {{editarEquipo.id}}
+                                </h6>
+                                <div class="pl-lg-4">
+                                    <div class="row">
+                                        <div class="col">
+                                            <div class="form-group">
+                                                <label class="form-control-label" for="input-first-name">Nombre</label>
+                                                <input type="text" id="nombre"
+                                                    class="form-control form-control-alternative"
+                                                    placeholder="Club Deportivo ..." formControlName="nombre">
+                                            </div>
+                                        </div>
+                                        <div class="col">
+                                            <div class="form-group">
+                                                <label class="form-control-label" for="input-last-name">Uniforme</label>
+                                                <input type="text" id="input-last-name"
+                                                    class="form-control form-control-alternative"
+                                                    placeholder="Blanco y rojo" formControlName="uniforme">
+                                            </div>
+                                        </div>
+                                        <div class="col">
+                                            <div class="form-group">
+                                                <div class="card-profile-image">
+                                                    <a href="javascript:void(0)">
+                                                        <img [src]="editarEquipo.value.logo"
+                                                            alt="Logo actual" class="rounded-circle">
+                                                    </a>
+                                                </div>
+                                            </div>
+                                        </div>
+
+                                    </div>
+                                    <div class="row">
+                                        <div class="col">
+                                            <div class="form-group">
+                                                <label class="form-control-label" for="fecha">Fecha de fundacion</label>
+                                                <input type="date" class="form-control form-control-alternative"
+                                                    id="fecha" formControlName="fecha_fundacion">
+                                            </div>
+                                        </div>
+                                        <div class="col">
+                                            <div class="form-group">
+                                                <label class="form-control-label" for="select-dirigente">Seleccione el
+                                                    Dirigente</label>
+                                                <select id="select-dirigente"
+                                                    class="form-control form-control-alternative"
+                                                    formControlName="dirigente">
+                                                    <option *ngFor="let dirigente of dirigentes"
+                                                        [ngValue]="dirigente.id">
+                                                        {{ dirigente.nombres }} {{ dirigente.apellidos }}
+                                                    </option>
+                                                </select>
+                                            </div>
+                                        </div>
+                                        <div class="col">
+                                            <div class="form-group">
+                                                <label class="form-control-label" for="select-categoria">Seleccione la
+                                                    Categoría</label>
+                                                <select id="select-categoria"
+                                                    class="form-control form-control-alternative"
+                                                    formControlName="categoria">
+                                                    <option *ngFor="let categoria of categorias"
+                                                        [ngValue]="categoria.id">
+                                                        {{ categoria.categoria }} - {{categoria.descripcion}}
+                                                    </option>
+                                                </select>
+                                            </div>
+                                        </div>
+                                        <div class="col">
+                                            <div class="form-group">
+                                                <label for="logo">Cambiar Logo</label>
+                                                <input id="logo" type="file" name="logo"
+                                                    (change)="onFileSelected($event)" />
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </form>
+                        </div>
+                    </ng-container>
+
+                    <ng-container *ngIf="tituloTabla === 'Jugadores'">
+                        <!-- Formulario para editar Jugadores -->
+                        <div class="card-body">
+                            <form [formGroup]="editarJugador" (ngSubmit)="postForm(editarJugador.value)">
+                                <h6 class="heading-small text-muted mb-4">Editar Jugador con ID: {{editarJugador.id}} </h6>
+                                <div class="pl-lg-4">
+                                    <div class="row">
+                                        <div class="col">
+                                            <div class="form-group">
+                                                <label class="form-control-label" for="cedula">Cédula</label>
+                                                <input type="text" id="cedula"
+                                                    class="form-control form-control-alternative"
+                                                    placeholder="1234567890" formControlName="cedula">
+                                            </div>
+                                        </div>
+                                        <div class="col">
+                                            <div class="form-group">
+                                                <label class="form-control-label" for="nombres">Nombres</label>
+                                                <input type="text" id="nombres"
+                                                    class="form-control form-control-alternative"
+                                                    placeholder="Nombre1 Nombre2" formControlName="nombres">
+                                            </div>
+                                        </div>
+                                        <div class="col">
+                                            <div class="form-group">
+                                                <label class="form-control-label" for="apellidos">Apellidos</label>
+                                                <input type="text" id="apellidos"
+                                                    class="form-control form-control-alternative"
+                                                    placeholder="Apellido1 Apellido2" formControlName="apellidos">
+                                            </div>
+                                        </div>
+                                        <div class="col">
+                                            <div class="form-group">
+                                                <label class="form-control-label" for="dorsal">Dorsal</label>
+                                                <input type="number" id="dorsal"
+                                                    class="form-control form-control-alternative" placeholder="10"
+                                                    formControlName="dorsal">
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="row">
+
+                                        <div class="col">
+                                            <div class="form-group">
+                                                <label class="form-control-label" for="fecha">Fecha de
+                                                    nacimiento</label>
+                                                <input type="date" class="form-control form-control-alternative"
+                                                    id="fecha" formControlName="fecha_nacimiento">
+                                            </div>
+                                        </div>
+                                        <div class="col">
+                                            <div class="form-group">
+                                                <label class="form-control-label" for="canton">Cantón juega</label>
+                                                <input type="text" id="canton"
+                                                    class="form-control form-control-alternative"
+                                                    placeholder="Pedro Moncayo" formControlName="canton_juega">
+                                            </div>
+                                        </div>
+                                        <div class="col">
+                                            <div class="form-group">
+                                                <label class="form-control-label" for="direccion">Direccion</label>
+                                                <input type="text" id="direccion"
+                                                    class="form-control form-control-alternative"
+                                                    placeholder="Quito, Ecuador" formControlName="direccion">
+                                            </div>
+                                        </div>
+                                        <div class="col">
+                                            <div class="form-group">
+                                                <label class="form-control-label" for="telefono">Teléfono</label>
+                                                <input type="text" id="telefono"
+                                                    class="form-control form-control-alternative"
+                                                    placeholder="0987654321" formControlName="telefono">
+                                            </div>
+                                        </div>
+
+                                    </div>
+
+                                    <div class="row">
+                                        <div class="col">
+                                            <div class="form-group">
+                                                <label class="form-control-label" for="email">Email</label>
+                                                <input type="text" id="email"
+                                                    class="form-control form-control-alternative"
+                                                    placeholder="ejemplo@hotmail.com" formControlName="email">
+                                            </div>
+                                        </div>
+                                        <div class="col">
+                                            <div class="form-group">
+                                                <label class="form-control-label" for="origen">Origen</label>
+                                                <select class="form-control" id="origen" formControlName="origen">
+                                                    <option value="Nacional">Nacional</option>
+                                                    <option value="Extranjero">Extranjero</option>
+                                                </select>
+                                            </div>
+                                        </div>
+                                        <div class="col">
+                                            <div class="form-group">
+                                                <label for="logo">Foto del Jugador:</label>
+                                                <input type="file" (change)="onFileSelected($event)" accept="image/*" />
+                                            </div>
+                                        </div>
+
+                                        <div class="col">
+                                            <div class="form-group">
+                                                <label class="form-control-label" for="equipo">Seleccione el
+                                                    Equipo</label>
+                                                <select  id="equipo"
+                                                    class="form-control form-control-alternative"
+                                                    formControlName="equipo">
+                                                    <option *ngFor="let equipo of equipos" [ngValue]="equipo.id">
+                                                        {{ equipo.nombre }}
+                                                    </option>
+                                                </select>
+                                            </div>
+                                        </div>
+
+                                    </div>
+                                </div>
+                            </form>
+                        </div>
+                    </ng-container>
+
+                    <ng-container *ngIf="tituloTabla === 'Dirigentes'">
+                        <!-- Formulario para editar Dirigentes -->
+                        <div class="card-body">
+                            <form [formGroup]="editarDirigente" (ngSubmit)="postForm(editarDirigente.value)">
+                                <h5 class="heading-small text-muted mb-4">Editar Dirigente </h5>
+                                <div class="pl-lg-4">
+                                    <div class="row">
+                                        <div class="col">
+                                            <div class="form-group">
+                                                <label class="form-control-label" for="input-first-name">Cédula</label>
+                                                <input type="text" id="input-first-name"
+                                                    class="form-control form-control-alternative"
+                                                    placeholder="1234567890" formControlName="cedula">
+                                            </div>
+                                        </div>
+                                        <div class="col">
+                                            <div class="form-group">
+                                                <label class="form-control-label" for="input-last-name">Nombres</label>
+                                                <input type="text" id="input-last-name"
+                                                    class="form-control form-control-alternative"
+                                                    placeholder="Nombre1 Nombre2" formControlName="nombres">
+                                            </div>
+                                        </div>
+
+                                        <div class="col">
+                                            <div class="form-group">
+                                                <label class="form-control-label"
+                                                    for="input-last-name">Apellidos</label>
+                                                <input type="text" id="input-last-name"
+                                                    class="form-control form-control-alternative"
+                                                    placeholder="Apellido1 Apellido2" formControlName="apellidos">
+                                            </div>
+                                        </div>
+
+                                    </div>
+                                    <div class="row">
+                                        <div class="col">
+                                            <div class="form-group">
+                                                <label class="form-control-label" for="input-last-name">Teléfono</label>
+                                                <input type="text" id="telefono"
+                                                    class="form-control form-control-alternative"
+                                                    placeholder="0987654321" formControlName="telefono">
+                                            </div>
+                                        </div>
+                                        <div class="col">
+                                            <div class="form-group">
+                                                <label class="form-control-label" for="input-last-name">Lugar de
+                                                    nacimiento</label>
+                                                <input type="text" id="input-last-name"
+                                                    class="form-control form-control-alternative"
+                                                    placeholder="Quito, Ecuador" formControlName="lugar_nacimiento">
+                                            </div>
+                                        </div>
+                                        <div class="col">
+                                            <div class="form-group">
+                                                <label class="form-control-label" for="fecha">Fecha de
+                                                    nacimiento</label>
+                                                <input type="date" class="form-control form-control-alternative"
+                                                    id="fecha" formControlName="fecha_nacimiento">
+                                            </div>
+                                        </div>
+                                        <div class="col">
+                                            <div class="form-group">
+                                                <label class="form-control-label" for="suspendido">Suspendido</label>
+                                                <div class="custom-control custom-checkbox mb-3">
+                                                    <input class="custom-control-input" id="suspendido" type="checkbox"
+                                                        formControlName="suspendido">
+                                                    <label class="custom-control-label" for="suspendido"></label>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </form>
+                        </div>
+                    </ng-container>
+
+                    <ng-container *ngIf="tituloTabla === 'Arbitros'">
+                        <!-- Formulario para editar Arbitros -->
+                        <div class="card-body">
+                            <form [formGroup]="editarArbitro" (ngSubmit)="postForm(editarArbitro.value)">
+                                <h6 class="heading-small text-muted mb-4">Editar Árbitros con ID: </h6>
+                                <div class="pl-lg-4">
+                                    <div class="row">
+                                        <div class="col">
+                                            <div class="form-group">
+                                                <label class="form-control-label" for="input-first-name">Cédula</label>
+                                                <input type="text" id="input-first-name"
+                                                    class="form-control form-control-alternative"
+                                                    placeholder="1234567890" formControlName="cedula">
+                                            </div>
+                                        </div>
+                                        <div class="col">
+                                            <div class="form-group">
+                                                <label class="form-control-label" for="input-last-name">Nombres</label>
+                                                <input type="text" id="input-last-name"
+                                                    class="form-control form-control-alternative"
+                                                    placeholder="Nombre1 Nombre2" formControlName="nombres">
+                                            </div>
+                                        </div>
+
+                                        <div class="col">
+                                            <div class="form-group">
+                                                <label class="form-control-label"
+                                                    for="input-last-name">Apellidos</label>
+                                                <input type="text" id="input-last-name"
+                                                    class="form-control form-control-alternative"
+                                                    placeholder="Apellido1 Apellido2" formControlName="apellidos">
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="row">
+                                        <div class="col">
+                                            <div class="form-group">
+                                                <label class="form-control-label" for="input-last-name">Telefono</label>
+                                                <input type="text" id="input-last-name"
+                                                    class="form-control form-control-alternative"
+                                                    placeholder="0987654321" formControlName="telefono">
+                                            </div>
+                                        </div>
+                                        <div class="col">
+                                            <div class="form-group">
+                                                <label class="form-control-label" for="input-email">Email</label>
+                                                <input type="email" id="input-email"
+                                                    class="form-control form-control-alternative"
+                                                    placeholder="jesse@example.com" formControlName="email">
+                                            </div>
+                                        </div>
+                                        <div class="col">
+                                            <div class="form-group">
+                                                <label class="form-control-label"
+                                                    for="input-last-name">Direccion</label>
+                                                <input type="text" id="input-last-name"
+                                                    class="form-control form-control-alternative"
+                                                    placeholder="Direccion" formControlName="direccion">
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </form>
+                        </div>
+                    </ng-container>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+<script>
+    // Example starter JavaScript for disabling form submissions if there are invalid fields
+    (function () {
+        'use strict';
+        window.addEventListener('load', function () {
+            // Fetch all the forms we want to apply custom Bootstrap validation styles to
+            var forms = document.getElementsByClassName('needs-validation');
+            // Loop over them and prevent submission
+            var validation = Array.prototype.filter.call(forms, function (form) {
+                form.addEventListener('submit', function (event) {
+                    if (form.checkValidity() === false) {
+                        event.preventDefault();
+                        event.stopPropagation();
+                    }
+                    form.classList.add('was-validated');
+                }, false);
+            });
+        }, false);
+    })();
+</script>

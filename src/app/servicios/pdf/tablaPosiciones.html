@@ -1,0 +1,134 @@
+<!DOCTYPE html>
+<html lang="es">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Reporte Tabla de Posiciones</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 20px;
+        }
+
+        .header-container {
+            display: flex;
+            align-items: center;
+            margin-bottom: 20px;
+        }
+
+        .logo {
+            flex-shrink: 0;
+            width: 100px;
+            height: 100px;
+            margin-right: 20px;
+        }
+
+        .header {
+            text-align: center;
+            flex-grow: 1;
+        }
+
+        .header h1 {
+            font-size: 24px;
+            margin: 0;
+        }
+
+        .header p {
+            margin: 5px 0;
+            font-size: 14px;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 20px;
+        }
+
+        table,
+        th,
+        td {
+            border: 1px solid #000;
+        }
+
+        th,
+        td {
+            text-align: center;
+            padding: 10px;
+        }
+
+        th {
+            background-color: #A80000;
+            color: #FFF;
+        }
+
+        .pos {
+            width: 5%;
+        }
+
+        .equipo {
+            text-align: left;
+            padding-left: 10px;
+        }
+
+        .footer {
+            margin-top: 20px;
+            text-align: center;
+            font-size: 12px;
+        }
+    </style>
+</head>
+
+<body>
+    <div class="header-container">
+        <img src="../../../assets/img/theme/logo LDCPM.jpg" alt="Logo de la Liga" class="logo">
+        <div class="header">
+            <h1>LIGA DEPORTIVA CANTONAL DE PEDRO MONCAYO</h1>
+            <p>Av. Eugenio Espejo y Tobías Mena</p>
+            <p>Teléfono: 2585-445</p>
+            <p>Categoría: ${datos.categoria}</p>
+            <p>Fecha: ${datos.fecha}</p>
+            <p>Fase ${datos.fase}</p>
+        </div>
+    </div>
+
+    <table>
+        <thead>
+            <tr>
+                <th class="pos">Pos</th>
+                <th>Equipo</th>
+                <th>PJ</th>
+                <th>PG</th>
+                <th>PE</th>
+                <th>PP</th>
+                <th>GF</th>
+                <th>GC</th>
+                <th>GD</th>
+                <th>Pts</th>
+            </tr>
+        </thead>
+        <tbody>
+            ${datos.posiciones.map(pos => `
+            <tr>
+                <td>${pos.pos}</td>
+                <td class="equipo">${pos.equipo}</td>
+                <td>${pos.pj}</td>
+                <td>${pos.pg}</td>
+                <td>${pos.pe}</td>
+                <td>${pos.pp}</td>
+                <td>${pos.gf}</td>
+                <td>${pos.gc}</td>
+                <td>${pos.gd}</td>
+                <td>${pos.pts}</td>
+            </tr>
+            `).join('')}
+           
+        </tbody>
+    </table>
+
+    <div class="footer">
+        <p>Reporte generado automáticamente por el sistema de gestión de campeonatos.</p>
+    </div>
+</body>
+
+</html>

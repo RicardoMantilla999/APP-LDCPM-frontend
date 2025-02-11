@@ -1,0 +1,169 @@
+//
+// Table
+//
+
+
+// General styles
+
+.table {
+    thead th {
+        padding-top: $table-head-spacer-y;
+        padding-bottom: $table-head-spacer-y;
+        font-size: $table-head-font-size;
+        text-transform: $table-head-text-transform;
+        letter-spacing: $table-head-letter-spacing;
+        border-bottom: $table-border-width solid $table-border-color;
+    }
+
+    th {
+        font-weight: $table-head-font-weight;
+    }
+
+    td {
+        .progress {
+            height: 3px;
+            width: 120px;
+            margin: 0;
+        }
+    }
+
+    td,
+    th {
+        font-size: $table-body-font-size;
+        white-space: nowrap;
+    }
+
+
+    // Vetical align table content
+
+    &.align-items-center {
+
+        td,
+        th {
+            vertical-align: middle;
+        }
+    }
+
+
+    // Styles for dark table
+
+    .thead-dark {
+        th {
+            background-color: $table-dark-head-bg;
+            color: $table-dark-head-color;
+        }
+    }
+
+
+    // Styles for light table
+
+    .thead-light {
+        th {
+            background-color: $table-head-bg;
+            color: $table-head-color;
+        }
+    }
+
+
+}
+
+
+// Add transition for hover state
+
+.table-hover {
+    tr {
+        @include transition($transition-base);
+    }
+}
+
+
+// Flush tables
+
+.table-flush {
+
+    td,
+    th {
+        border-left: 0;
+        border-right: 0;
+    }
+
+    tbody {
+        tr {
+            &:first-child {
+
+                td,
+                th {
+                    border-top: 0;
+                }
+            }
+
+            &:last-child {
+
+                td,
+                th {
+                    border-bottom: 0;
+                }
+            }
+        }
+    }
+}
+
+
+// Tables inside cards
+
+.card {
+    .table {
+        margin-bottom: 0;
+
+        td,
+        th {
+            padding-left: $card-spacer-x;
+            padding-right: $card-spacer-x;
+        }
+    }
+}
+
+.table .highlight-cell {
+    background-color: white; // Fondo blanco
+    color: black; // Texto negro
+    border-radius: 10px;
+    //border: 2px solid $table-border-color; // Borde visible
+}
+
+.table .no-border {
+    border: none !important; // Elimina los bordes
+}
+
+// Clase para mostrar solo el borde superior
+.table .border-arriba {
+    border-top: 3px solid $table-border-color; // Aplica solo borde superior
+    border-left: none;
+    border-right: none;
+    border-bottom: none;
+}
+
+// Clase para mostrar solo el borde inferior
+.table .border-abajo {
+    border-top: none;
+    border-left: none;
+    border-right: none;
+    border-bottom: 3px solid $table-border-color; // Aplica solo borde inferior
+}
+
+// Clase para mostrar solo el borde lateral izquierdo
+.table .border-izquierda {
+    border-top: none;
+    border-right: none;
+    border-bottom: none;
+    border-left: 3px solid $table-border-color; // Aplica solo borde izquierdo
+}
+
+// Clase para mostrar solo el borde lateral derecho
+.table .border-derecha {
+    border-top: none;
+    border-left: none;
+    border-bottom: none;
+    border-right: 3px solid $table-border-color; // Aplica solo borde derecho
+}
+
+
