@@ -12,7 +12,7 @@ export class ApiCampeonatosService {
   url: string = 'http://localhost:3000/api/';
 
   ///produccion
-  //url: string = 'https://backend-ldcpm-9amscjvbd-ricardomantillas-projects.vercel.app/api/';
+  //rl: string = 'https://backend-ldcpm-9amscjvbd-ricardomantillas-projects.vercel.app/api/';
 
   constructor(private http: HttpClient) { }
 
