@@ -9,10 +9,10 @@ import { CampeonatosI } from 'src/app/modelos/campeonatos.interface';
 export class ApiCampeonatosService {
 
   ///desarrollo
-  url: string = 'http://localhost:3000/api/';
+  //url: string = 'http://localhost:3000/api/';
 
   ///produccion
-  //rl: string = 'https://backend-ldcpm-9amscjvbd-ricardomantillas-projects.vercel.app/api/';
+  url: string = 'https://app-ldcpm-backend.onrender.com/api/';
 
   constructor(private http: HttpClient) { }
 

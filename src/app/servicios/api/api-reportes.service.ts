@@ -14,10 +14,10 @@ import { PosicionI } from 'src/app/modelos/posiciones.interface';
 export class ApiReportesService {
 
   ///desarrollo
-  url: string = 'http://localhost:3000/api/';
+  //url: string = 'http://localhost:3000/api/';
 
   ///produccion
-  //url: string = 'https://backend-ldcpm-9amscjvbd-ricardomantillas-projects.vercel.app/api/';
+  url: string = 'https://app-ldcpm-backend.onrender.com/api/';
                 
 
   constructor(private http: HttpClient) {
