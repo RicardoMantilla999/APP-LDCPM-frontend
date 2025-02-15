@@ -326,7 +326,7 @@ export class GestionComponent implements OnInit {
         }
 
         const asignarFotoPredeterminada = (jugadores: any[]) => {
-          const fotoPredeterminada = 'foto/sin foto.png'; // Reemplaza con tu URL o ruta
+          const fotoPredeterminada = '/src/assets/img/theme/sin foto.png'; // Reemplaza con tu URL o ruta
           return jugadores.map(jugador => ({
             ...jugador,
             foto: jugador.foto || fotoPredeterminada, // Asignar foto predeterminada si no tiene una
