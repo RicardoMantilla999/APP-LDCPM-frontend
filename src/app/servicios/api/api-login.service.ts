@@ -327,9 +327,9 @@ export class ApiLoginService {
     const direccion = this.url + "equipos/" + id;
     return this.http.patch<any>(direccion, equipo);
   }
-  editarJugador(jugador: JugadoresI) {
-    const direccion = this.url + "jugadores/" + jugador.id;
-    return this.http.patch(direccion, jugador);
+  editarJugador(jugador: FormData, id: number): Observable<any> {
+    const direccion = this.url + "jugadores/" + id;
+    return this.http.patch<any>(direccion, jugador);
   }
   editarDirigente(dirigente: DirigenteI) {
     const direccion = this.url + "dirigentes/" + dirigente.id;

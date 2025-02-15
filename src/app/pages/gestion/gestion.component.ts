@@ -718,6 +718,8 @@ export class GestionComponent implements OnInit {
     }
   }
 
+
+
   guardarCambios(tipo: string) {
     switch (tipo) {
       case 'Categorías':
@@ -806,9 +808,29 @@ export class GestionComponent implements OnInit {
         }).then((result) => {
           if (result.isConfirmed) {
             // Ejecutar lógica de edición
-            const jugadorEditado = this.editarJugador.value;
-            console.log('Jugador actualizado: ', jugadorEditado)
-            this.api.editarJugador(jugadorEditado).subscribe(
+            const jugadorEditado = { ...this.editarJugador.value };
+
+            // Si no se seleccionó una nueva foto, eliminar la propiedad `foto`
+            if (!this.selectedFile) {
+              delete jugadorEditado.foto;
+            }
+
+            const formData = new FormData();
+            for (const key in jugadorEditado) {
+              if (jugadorEditado[key] !== null && jugadorEditado[key] !== undefined) {
+                formData.append(key, jugadorEditado[key]);
+              }
+            }
+
+            // Si hay una nueva foto, agregarla al FormData
+            if (this.selectedFile) {
+              formData.append('foto', this.selectedFile);
+            }
+
+            console.log('Jugador actualizado: ', jugadorEditado);
+
+            const id = this.editarJugador.value.id;
+            this.api.editarJugador(formData, id).subscribe(
               (response) => {
                 this.alertas.success('Jugador actualizado con éxito.', 'Hecho');
                 this.mostrarDetalles('Jugadores');
@@ -816,7 +838,9 @@ export class GestionComponent implements OnInit {
               },
               (error) => {
                 this.alertas.error(error.error.message || 'Error desconocido', 'Error al actualizar Jugador.');
-              });
+              }
+            );
+
           }
         });
 

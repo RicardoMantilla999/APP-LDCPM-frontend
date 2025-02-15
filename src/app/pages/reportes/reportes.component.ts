@@ -154,7 +154,7 @@ export class ReportesComponent implements OnInit {
 
   obtenerJugadoresByEquipo() {
     const asignarFotoPredeterminada = (jugadores: any[]) => {
-      const fotoPredeterminada = 'foto/sin foto.png'; // Reemplaza con tu URL o ruta
+      const fotoPredeterminada = '../assets/img/theme/sin foto.png'; // Reemplaza con tu URL o ruta
       return jugadores.map(jugador => ({
         ...jugador,
         foto: jugador.foto || fotoPredeterminada, // Asignar foto predeterminada si no tiene una
@@ -421,7 +421,7 @@ export class ReportesComponent implements OnInit {
     const logo = new Image();
     const includeTitle = false; // Cambiar a false si no quieres el título en la página
     this.obtenerEquipo();
-    logo.src = "../../../assets/img/theme/logo LDCPM.jpg";
+    logo.src = "../assets/img/theme/logo LDCPM.jpg";
 
     const carnetWidth = 80; // Ancho del carnet
     const carnetHeight = 58; // Alto del carnet
@@ -551,7 +551,7 @@ export class ReportesComponent implements OnInit {
   reporteTarjetas() {
     const doc = new jsPDF();
     const logo = new Image();
-    logo.src = "../../../assets/img/theme/logo LDCPM.jpg"; // Ruta de la imagen
+    logo.src = "../assets/img/theme/logo LDCPM.jpg"; // Ruta de la imagen
 
     logo.onload = () => {
       doc.addImage(logo, 'JPEG', 10, 10, 40, 40); // (x=10, y=10), con ancho=40 y alto=40
@@ -623,7 +623,7 @@ export class ReportesComponent implements OnInit {
   reporteTablaPosiciones() {
     const doc = new jsPDF();
     const logo = new Image();
-    logo.src = "../../../assets/img/theme/logo LDCPM.jpg"; // Ruta de la imagen
+    logo.src = "../assets/img/theme/logo LDCPM.jpg"; // Ruta de la imagen
 
     logo.onload = () => {
       doc.addImage(logo, 'JPEG', 10, 10, 40, 40); // (x=10, y=10), con ancho=50 y alto=30
@@ -686,7 +686,7 @@ export class ReportesComponent implements OnInit {
   reporteGoleadores() {
     const doc = new jsPDF();
     const logo = new Image();
-    logo.src = "../../../assets/img/theme/logo LDCPM.jpg"; // Ruta de la imagen
+    logo.src = "../assets/img/theme/logo LDCPM.jpg"; // Ruta de la imagen
 
     logo.onload = () => {
       doc.addImage(logo, 'JPEG', 10, 10, 40, 40); // (x=10, y=10), con ancho=50 y alto=30
@@ -757,7 +757,7 @@ export class ReportesComponent implements OnInit {
   reporteCuadrangular() {
     const doc = new jsPDF('landscape'); // Orientación horizontal
     const logo = new Image();
-    logo.src = "../../../assets/img/theme/logo LDCPM.jpg"; // Ruta de la imagen
+    logo.src = "../assets/img/theme/logo LDCPM.jpg"; // Ruta de la imagen
 
     const obtenerLogo = (equipo) =>
       equipo?.logo ? this.rutaImagenes + equipo.logo : this.rutaImagenes + 'foto/logo default.png';
