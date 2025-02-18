@@ -385,7 +385,7 @@ export class ReportesComponent implements OnInit {
     switch (tipo) {
 
       case 'Tabla de Posiciones':
-        if (this.faseSeleccionada !== 1) {
+        if (this.faseSeleccionada > 1) {
 
           this.reporteCuadrangular();
         } else {
@@ -713,7 +713,7 @@ export class ReportesComponent implements OnInit {
       });
 
       // Guardamos el PDF
-      doc.save('Teporte_Tabla_Posiciones.pdf');
+      doc.save('Reporte_Tabla_Posiciones.pdf');
     }
 
   }
