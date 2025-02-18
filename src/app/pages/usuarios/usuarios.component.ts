@@ -31,6 +31,8 @@ export class UsuariosComponent implements OnInit {
   roles: { key: string; value: string }[] = [];
   rolSeleccionado: string = '';
 
+  isLoading = false;
+
   constructor(private api: ApiLoginService, private alertas: ToastrService, private router: Router) { }
 
   ngOnInit(): void {
@@ -58,7 +60,9 @@ export class UsuariosComponent implements OnInit {
   }
 
   cargarUsuarios(): void {
+    this.isLoading = true;
     this.api.getAllUsuarios().subscribe(data => {
+      this.isLoading = false;
       this.usuarios = data;
       this.datosTabla = this.usuarios;
     })

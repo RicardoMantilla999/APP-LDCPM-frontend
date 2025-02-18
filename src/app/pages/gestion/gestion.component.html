@@ -106,7 +106,7 @@
                         <button class="btn btn-icon btn-3 btn-outline-success" type="submit"
                             (click)="mostrarFormularioImportar()">
                             <span class="btn-inner--icon"><img src="../../../assets/img/theme/excel.png" alt="Importar"
-                                style="width: 25px; height: 25px; margin-right: 5px;"></span>
+                                    style="width: 25px; height: 25px; margin-right: 5px;"></span>
                             <span class="btn-inner--text">IMPORTAR EXCEL</span>
                         </button>
 
@@ -140,16 +140,29 @@
                     </div>
                     <!-- para crear-->
                     <div *ngIf="mostrarForm" class="col text-right">
-                        <a type="button" class="btn btn-outline-success" (click)="crearObjeto(tituloTabla)">CREAR</a>
+                        <a type="button" class="btn btn-outline-success" (click)="crearObjeto(tituloTabla)">
+                            <span *ngIf="!isLoading">CREAR</span>
+                            <span *ngIf="isLoading">
+                                <img src="../../../assets/img/theme/balon.png" alt="Cargando..." width="20"
+                                    height="20" />Creando...
+                            </span>
+                        </a>
                         <a type="button" class="btn btn-outline-danger"
                             (click)="mostrarDetalles(tituloTabla)">CANCELAR</a>
                     </div>
                     <!-- para guardar cambios EDITAR -->
                     <div *ngIf="mostrarFormEditar" class="col text-right">
-                        <a type="button" class="btn btn-outline-success" (click)="guardarCambios(tituloTabla)">GUARDAR
-                            CAMBIOS </a>
+                        <a type="button" class="btn btn-outline-success" (click)="guardarCambios(tituloTabla)"
+                            [disabled]="isLoading">
+                            <span *ngIf="!isLoading">GUARDAR CAMBIOS</span>
+                            <span *ngIf="isLoading">
+                                <img src="../../../assets/img/theme/balon.png" alt="Cargando..." width="20"
+                                    height="20" />Guardando...
+                            </span>
+                        </a>
                         <a type="button" class="btn btn-outline-danger"
                             (click)="mostrarDetalles(tituloTabla)">CANCELAR</a>
+
                     </div>
                 </div>
                 <div class="col-10">
@@ -200,13 +213,19 @@
                             </tr>
                         </thead>
                         <tbody>
+                            <!-- Mostrar loading cuando los datos están cargando -->
+                            <tr *ngIf="isLoading">
+                                <td colspan="7" class="text-center">
+                                    <img src="../../../assets/img/theme/balon.png" alt="Cargando..." width="40"
+                                        height="40" class="spin" />
+                                    <p class="mt-2">Cargando datos...</p>
+                                </td>
+                            </tr>
                             <tr *ngFor="let item of datosTabla">
                                 <th *ngIf="tituloTabla === 'Equipos'">
                                     <div class="media align-items-center">
                                         <a href="javascript:void(0)" class="avatar rounded-circle mr-3">
-                                            <img alt="Logo del equipo"
-                                                [src]="item.logo"
-                                                alt="Logo del equipo">
+                                            <img alt="Logo del equipo" [src]="item.logo" alt="Logo del equipo">
                                         </a>
                                     </div>
                                 </th>
@@ -251,9 +270,7 @@
                                 <td *ngIf="tituloTabla === 'Jugadores'">
                                     <div class="media align-items-center">
                                         <a href="javascript:void(0)" class="avatar rounded-circle mr-3">
-                                            <img alt="Logo del equipo"
-                                                [src]="item.foto"
-                                                alt="Logo del equipo">
+                                            <img alt="Logo del equipo" [src]="item.foto" alt="Logo del equipo">
                                         </a>
                                     </div>
                                 </td>
@@ -277,7 +294,7 @@
                                     </div>
                                 </td>
                             </tr>
-                            <tr *ngIf="datosTabla.length === 0">
+                            <tr *ngIf="datosTabla.length === 0 && !isLoading">
                                 <td colspan="6" class="text-center">
                                     No hay datos disponibles
                                 </td>
@@ -323,7 +340,8 @@
                                         </div>
                                     </div>
                                     <label for="file"> </label>
-                                    <button type="submit" class="btn btn-icon btn-3 btn-outline-success" [disabled]="!file">
+                                    <button type="submit" class="btn btn-icon btn-3 btn-outline-success"
+                                        [disabled]="!file">
                                         Importar
                                     </button>
                                 </div>
@@ -786,8 +804,8 @@
                                             <div class="form-group">
                                                 <div class="card-profile-image">
                                                     <a href="javascript:void(0)">
-                                                        <img [src]="editarEquipo.value.logo"
-                                                            alt="Logo actual" class="rounded-circle">
+                                                        <img [src]="editarEquipo.value.logo" alt="Logo actual"
+                                                            class="rounded-circle">
                                                     </a>
                                                 </div>
                                             </div>
@@ -847,7 +865,8 @@
                         <!-- Formulario para editar Jugadores -->
                         <div class="card-body">
                             <form [formGroup]="editarJugador" (ngSubmit)="postForm(editarJugador.value)">
-                                <h6 class="heading-small text-muted mb-4">Editar Jugador con ID: {{editarJugador.id}} </h6>
+                                <h6 class="heading-small text-muted mb-4">Editar Jugador con ID: {{editarJugador.id}}
+                                </h6>
                                 <div class="pl-lg-4">
                                     <div class="row">
                                         <div class="col">
@@ -941,7 +960,8 @@
                                         <div class="col">
                                             <div class="form-group">
                                                 <label for="foto">Foto del Jugador:</label>
-                                                <input id="foto" name="foto" type="file" (change)="onFileSelected($event)" accept="image/*" />
+                                                <input id="foto" name="foto" type="file"
+                                                    (change)="onFileSelected($event)" accept="image/*" />
                                             </div>
                                         </div>
 
@@ -949,8 +969,7 @@
                                             <div class="form-group">
                                                 <label class="form-control-label" for="equipo">Seleccione el
                                                     Equipo</label>
-                                                <select  id="equipo"
-                                                    class="form-control form-control-alternative"
+                                                <select id="equipo" class="form-control form-control-alternative"
                                                     formControlName="equipo">
                                                     <option *ngFor="let equipo of equipos" [ngValue]="equipo.id">
                                                         {{ equipo.nombre }}

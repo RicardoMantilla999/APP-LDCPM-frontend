@@ -196,6 +196,14 @@
                                 </tr>
                             </thead>
                             <tbody>
+                                <!-- Mostrar loading cuando los datos están cargando -->
+                                <tr *ngIf="isLoading">
+                                    <td colspan="10" class="text-center">
+                                        <img src="../../../assets/img/theme/balon.png" alt="Cargando..." width="40"
+                                            height="40" class="spin" />
+                                        <p class="mt-2">Cargando datos...</p>
+                                    </td>
+                                </tr>
                                 <ng-container *ngIf="!mostrarResultadoPosiciones">
                                     <tr *ngFor="let item of datosTabla; let i = index">
                                         <td
@@ -254,9 +262,7 @@
                                         <td *ngIf="tituloTabla === 'Carnets Jugadores'">
                                             <div class="media align-items-center">
                                                 <a href="javascript:void(0)" class="avatar rounded-circle mr-3">
-                                                    <img alt="Logo del equipo"
-                                                        [src]="item.foto"
-                                                        alt="Logo del equipo">
+                                                    <img alt="Logo del equipo" [src]="item.foto" alt="Logo del equipo">
                                                 </a>
                                             </div>
                                         </td>
@@ -264,7 +270,7 @@
 
                                     </tr>
                                 </ng-container>
-                                <tr *ngIf="datosTabla?.length === 0 && !mostrarResultadoPosiciones">
+                                <tr *ngIf="datosTabla?.length === 0 && !mostrarResultadoPosiciones && !isLoading">
                                     <td [attr.colspan]="tituloTabla === 'Tarjetas' ? (fechas.length + 1) : 10"
                                         class="text-center">
                                         No hay datos disponibles

@@ -6,6 +6,7 @@ import { ResponseI } from 'src/app/modelos/response.interface';
 import { ApiLoginService } from 'src/app/servicios/api/api-login.service';
 import { jwtDecode } from 'jwt-decode';
 import { ToastrService } from 'ngx-toastr';
+import { LoadingService } from 'src/app/servicios/loading.service';
 
 @Component({
   selector: 'app-login',
@@ -19,7 +20,7 @@ export class LoginComponent implements OnInit, OnDestroy {
     password: new FormControl('', Validators.required)
   })
 
-  constructor(private api: ApiLoginService, private router: Router, private alertas: ToastrService) { }
+  constructor(private api: ApiLoginService, private router: Router, private alertas: ToastrService, public loading: LoadingService) { }
 
   ngOnInit(): void {
     this.checkLocalStorage();
@@ -35,8 +36,10 @@ export class LoginComponent implements OnInit, OnDestroy {
   }
 
   onLogin(form: any): void {
+    this.loading.show();
     this.api.LoginByEmail(form).subscribe({
       next: (data) => {
+        this.loading.hide();
         const dataResponse: any = data;
 
         // Verificar que el token y el rol estén presentes
@@ -56,6 +59,7 @@ export class LoginComponent implements OnInit, OnDestroy {
 
           console.log('Inicio de sesión exitoso, rol:', userRole);
 
+
           // Redirigir según el rol del usuario
           if (userRole === 'admin') {
             this.router.navigate(['/campeonatos']); // Redirige a la página de administración
@@ -66,13 +70,13 @@ export class LoginComponent implements OnInit, OnDestroy {
             this.router.navigate(['/unauthorized']);
           }
         } else {
-          console.warn('La respuesta no contiene un token válido');
-          this.alertas.error('Error: No se pudo autenticar, intente nuevamente.', 'Error');
+          this.loading.hide();
+          this.alertas.error('No se pudo autenticar, intente nuevamente.', 'Error');
         }
       },
       error: (error) => {
-        console.error('Error en el login', error);
-        this.alertas.error('Error: No se pudo autenticar, intente nuevamente.', 'Error');
+        this.loading.hide();
+        this.alertas.error('Email o constraseña incorrecta.', 'Error');
       }
     });
   }

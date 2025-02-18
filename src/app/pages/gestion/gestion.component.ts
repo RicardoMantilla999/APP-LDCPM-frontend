@@ -10,6 +10,7 @@ import { DirigenteI } from 'src/app/modelos/dirigentes.interface';
 import { EquiposI } from 'src/app/modelos/equipos.interface';
 import { JugadoresI } from 'src/app/modelos/jugadores.interface';
 import { ApiLoginService } from 'src/app/servicios/api/api-login.service';
+import { LoadingService } from 'src/app/servicios/loading.service';
 import Swal from 'sweetalert2';
 
 @Component({
@@ -48,7 +49,9 @@ export class GestionComponent implements OnInit {
   //LocalStorage
   campeonatoGlobal: CampeonatosI;
 
-  constructor(private api: ApiLoginService, private router: Router, activeRouter: ActivatedRoute, private formBuilder: FormBuilder, private alertas: ToastrService) { }
+  isLoading = false;
+
+  constructor(private api: ApiLoginService, private router: Router, activeRouter: ActivatedRoute, private formBuilder: FormBuilder, private alertas: ToastrService, public loading: LoadingService) { }
 
 
   //Editar Objetos
@@ -75,8 +78,9 @@ export class GestionComponent implements OnInit {
 
   ngOnInit(): void {
     //Local Storage
+    this.loading.show();
     this.getCampeonato();
-
+    this.loading.hide()
   }
 
   getCampeonato() {
@@ -87,138 +91,115 @@ export class GestionComponent implements OnInit {
       this.router.navigate(['/campeonatos']);
     } else {
 
-      this.api.contarEquipos(this.campeonatoGlobal.id).subscribe(data => {
-        this.totalEquipos = data;
-      })
-      this.api.contarCategorias(this.campeonatoGlobal.id).subscribe(data => {
-        this.totalCategorias = data;
-      })
-      this.api.contarJugadores(this.campeonatoGlobal.id).subscribe(data => {
-        this.totalJugadores = data;
-      })
-      this.api.contarDirigentes(this.campeonatoGlobal.id).subscribe(data => {
-        this.totalDirigentes = data;
-      })
-      this.api.contarArbitros(this.campeonatoGlobal.id).subscribe(data => {
-        this.totalArbitros = data;
-      })
+      this.refrescarCantidad();
 
+      this.cargarFormularios();
 
-      this.api.getCategoriaByCampeonato(this.campeonatoGlobal.id).subscribe({
-        next: (data) => {
-          this.categorias = data; // Guarda las categorías filtradas
-        }
-      })
-
-      this.api.getEquipos(this.campeonatoGlobal.id).subscribe(data => {
-        this.equipos = data;
-      });
-      this.api.getJugadores(this.campeonatoGlobal.id).subscribe(data => {
-        this.jugadores = data;
-      });
-      this.api.getDirigentes(this.campeonatoGlobal.id).subscribe(data => {
-        this.dirigentes = data;
-      });
-      this.api.getArbitros(this.campeonatoGlobal.id).subscribe(data => {
-        this.arbitros = data;
-      });
-
-      this.nuevaCat = this.formBuilder.group({
-        categoria: ['', Validators.required],
-        descripcion: ['', Validators.required]
-      });
-      this.nuevoEquipo = this.formBuilder.group({
-        nombre: ['', Validators.required],
-        uniforme: ['', Validators.required],
-        fecha_fundacion: ['', Validators.required],
-        categoria: ['', Validators.required],
-        dirigente: ['', Validators.required],
-      });
-      this.nuevoJugador = this.formBuilder.group({
-        cedula: ['', Validators.required],
-        nombres: ['', Validators.required],
-        apellidos: ['', Validators.required],
-        dorsal: ['', Validators.required],
-        fecha_nacimiento: ['', Validators.required],
-        canton_juega: ['', Validators.required],
-        direccion: ['', Validators.required],
-        telefono: ['', Validators.required],
-        email: ['', Validators.required],
-        origen: ['', Validators.required],
-        foto: [null],
-        equipo: ['', Validators.required],
-      });
-      this.nuevoDirigente = this.formBuilder.group({
-        cedula: ['', Validators.required],
-        nombres: ['', Validators.required],
-        apellidos: ['', Validators.required],
-        telefono: ['', Validators.required],
-        lugar_nacimiento: ['', Validators.required],
-        fecha_nacimiento: ['', Validators.required],
-      });
-      this.nuevoArbitro = this.formBuilder.group({
-        cedula: ['', Validators.required],
-        nombres: ['', Validators.required],
-        apellidos: ['', Validators.required],
-        telefono: ['', Validators.required],
-        email: ['', Validators.required],
-        direccion: ['', Validators.required],
-      });
-
-      //EDITAR OBJETOS
-      this.editarCategoria = new FormGroup({
-        id: new FormControl(''),
-        categoria: new FormControl(''),
-        descripcion: new FormControl('')
-      })
-      this.editarEquipo = new FormGroup({
-        id: new FormControl(''),
-        nombre: new FormControl(''),
-        uniforme: new FormControl(''),
-        fecha_fundacion: new FormControl(''),
-        categoria: new FormControl(''),
-        dirigente: new FormControl(''),
-        logo: new FormControl(''),
-      })
-      this.editarJugador = new FormGroup({
-        id: new FormControl(''),
-        cedula: new FormControl(''),
-        nombres: new FormControl(''),
-        apellidos: new FormControl(''),
-        dorsal: new FormControl(''),
-        fecha_nacimiento: new FormControl(''),
-        canton_juega: new FormControl(''),
-        direccion: new FormControl(''),
-        telefono: new FormControl(''),
-        email: new FormControl(''),
-        origen: new FormControl(''),
-        foto: new FormControl(''),
-        equipo: new FormControl(''),
-        //suspendido: new FormControl(''),
-      })
-      this.editarDirigente = new FormGroup({
-        id: new FormControl(''),
-        cedula: new FormControl(''),
-        nombres: new FormControl(''),
-        apellidos: new FormControl(''),
-        telefono: new FormControl(''),
-        lugar_nacimiento: new FormControl(''),
-        fecha_nacimiento: new FormControl(''),
-        suspendido: new FormControl(''),
-      })
-      this.editarArbitro = new FormGroup({
-        id: new FormControl(''),
-        cedula: new FormControl(''),
-        nombres: new FormControl(''),
-        apellidos: new FormControl(''),
-        telefono: new FormControl(''),
-        email: new FormControl(''),
-        direccion: new FormControl(''),
-      })
       this.mostrarDetalles(this.tituloTabla);
     }
   }
 
+  cargarFormularios() {
+
+    this.nuevaCat = this.formBuilder.group({
+      categoria: ['', Validators.required],
+      descripcion: ['', Validators.required]
+    });
+    this.nuevoEquipo = this.formBuilder.group({
+      nombre: ['', Validators.required],
+      uniforme: ['', Validators.required],
+      fecha_fundacion: ['', Validators.required],
+      categoria: ['', Validators.required],
+      dirigente: ['', Validators.required],
+    });
+    this.nuevoJugador = this.formBuilder.group({
+      cedula: ['', Validators.required],
+      nombres: ['', Validators.required],
+      apellidos: ['', Validators.required],
+      dorsal: ['', Validators.required],
+      fecha_nacimiento: ['', Validators.required],
+      canton_juega: ['', Validators.required],
+      direccion: ['', Validators.required],
+      telefono: ['', Validators.required],
+      email: ['', Validators.required],
+      origen: ['', Validators.required],
+      foto: [null],
+      equipo: ['', Validators.required],
+    });
+    this.nuevoDirigente = this.formBuilder.group({
+      cedula: ['', Validators.required],
+      nombres: ['', Validators.required],
+      apellidos: ['', Validators.required],
+      telefono: ['', Validators.required],
+      lugar_nacimiento: ['', Validators.required],
+      fecha_nacimiento: ['', Validators.required],
+    });
+    this.nuevoArbitro = this.formBuilder.group({
+      cedula: ['', Validators.required],
+      nombres: ['', Validators.required],
+      apellidos: ['', Validators.required],
+      telefono: ['', Validators.required],
+      email: ['', Validators.required],
+      direccion: ['', Validators.required],
+    });
+
+    //EDITAR OBJETOS
+    this.editarCategoria = new FormGroup({
+      id: new FormControl(''),
+      categoria: new FormControl(''),
+      descripcion: new FormControl('')
+    })
+    this.editarEquipo = new FormGroup({
+      id: new FormControl(''),
+      nombre: new FormControl(''),
+      uniforme: new FormControl(''),
+      fecha_fundacion: new FormControl(''),
+      categoria: new FormControl(''),
+      dirigente: new FormControl(''),
+      logo: new FormControl(''),
+    })
+    this.editarJugador = new FormGroup({
+      id: new FormControl(''),
+      cedula: new FormControl(''),
+      nombres: new FormControl(''),
+      apellidos: new FormControl(''),
+      dorsal: new FormControl(''),
+      fecha_nacimiento: new FormControl(''),
+      canton_juega: new FormControl(''),
+      direccion: new FormControl(''),
+      telefono: new FormControl(''),
+      email: new FormControl(''),
+      origen: new FormControl(''),
+      foto: new FormControl(''),
+      equipo: new FormControl(''),
+      //suspendido: new FormControl(''),
+    })
+    this.editarDirigente = new FormGroup({
+      id: new FormControl(''),
+      cedula: new FormControl(''),
+      nombres: new FormControl(''),
+      apellidos: new FormControl(''),
+      telefono: new FormControl(''),
+      lugar_nacimiento: new FormControl(''),
+      fecha_nacimiento: new FormControl(''),
+      suspendido: new FormControl(''),
+    })
+    this.editarArbitro = new FormGroup({
+      id: new FormControl(''),
+      cedula: new FormControl(''),
+      nombres: new FormControl(''),
+      apellidos: new FormControl(''),
+      telefono: new FormControl(''),
+      email: new FormControl(''),
+      direccion: new FormControl(''),
+    })
+  }
+
+  vaciarDatos() {
+    this.datosTabla = null;
+
+  }
+  
   checkTokenExpiration(): void {
     const expirationTime = localStorage.getItem('token_expiration');
     const currentTime = new Date().getTime();
@@ -278,12 +259,14 @@ export class GestionComponent implements OnInit {
 
   mostrarDetalles(tipo: string) {
     // Actualiza los datos y el título de la tabla según el tipo seleccionado
-
+    this.vaciarDatos();
     switch (tipo) {
       case 'Categorías':
         this.categoriaSeleccionada = -1;
         this.equipoSeleccionado = -1;
+        this.isLoading = true;
         this.api.getCategoriaByCampeonato(this.campeonatoGlobal.id).subscribe(data => {
+          this.isLoading = false;
           this.categorias = data;
           this.datosTabla = this.categorias;
           this.tituloTabla = 'Categorías';
@@ -293,38 +276,37 @@ export class GestionComponent implements OnInit {
         break;
       case 'Equipos':
 
+        this.isLoading = true;
         if (this.categoriaSeleccionada < 0) {
           this.api.getEquipos(this.campeonatoGlobal.id).subscribe(data => {
+            this.isLoading = false;
             this.equipos = data;
             this.datosTabla = this.equipos;
             this.tituloTabla = 'Equipos';
             this.volverATabla();
             this.refrescarCantidad();
-            console.log(this.categoriaSeleccionada)
           });
         } else if (this.categoriaSeleccionada > 0) {
           this.api.getEquiposByCategoriaAndCampeonato(this.categoriaSeleccionada, this.campeonatoGlobal.id).subscribe(data => {
+            this.isLoading = false;
             this.equipos = data;
             this.datosTabla = this.equipos;
             this.tituloTabla = 'Equipos';
             this.volverATabla();
             this.refrescarCantidad();
-            console.log(this.categoriaSeleccionada)
           })
         }
 
         break;
       case 'Jugadores':
         this.categoriaSeleccionada = -1;
-
+        this.isLoading = true;
         this.api.getEquipos(this.campeonatoGlobal.id).subscribe(data => {
           this.equipos = data;
         });
-
         if (!this.equipoSeleccionado) {
           this.equipos = [];
         }
-
         const asignarFotoPredeterminada = (jugadores: any[]) => {
           const fotoPredeterminada = '../assets/img/theme/sin foto.png'; // Reemplaza con tu URL o ruta
           return jugadores.map(jugador => ({
@@ -335,6 +317,7 @@ export class GestionComponent implements OnInit {
 
         if (this.equipoSeleccionado < 0) {
           this.api.getJugadores(this.campeonatoGlobal.id).subscribe(data => {
+            this.isLoading = false;
             this.jugadores = asignarFotoPredeterminada(data); // Aplicar la función para asignar la foto
             this.datosTabla = this.jugadores;
             this.tituloTabla = 'Jugadores';
@@ -343,6 +326,7 @@ export class GestionComponent implements OnInit {
           });
         } else {
           this.api.getJugadoresByEquipo(this.equipoSeleccionado).subscribe(data => {
+            this.isLoading = false;
             this.jugadores = asignarFotoPredeterminada(data); // Aplicar la función para asignar la foto
             this.datosTabla = this.jugadores;
             this.tituloTabla = 'Jugadores';
@@ -356,7 +340,9 @@ export class GestionComponent implements OnInit {
       case 'Arbitros':
         this.categoriaSeleccionada = -1;
         this.equipoSeleccionado = -1;
+        this.isLoading = true;
         this.api.getArbitros(this.campeonatoGlobal.id).subscribe(data => {
+          this.isLoading = false;
           this.arbitros = data;
           this.datosTabla = this.arbitros;
           this.tituloTabla = 'Arbitros';
@@ -367,7 +353,9 @@ export class GestionComponent implements OnInit {
       case 'Dirigentes':
         this.categoriaSeleccionada = -1;
         this.equipoSeleccionado = -1;
+        this.isLoading = true;
         this.api.getDirigentes(this.campeonatoGlobal.id).subscribe(data => {
+          this.isLoading = false;
           this.dirigentes = data;
           this.datosTabla = this.dirigentes;
           this.tituloTabla = 'Dirigentes';
@@ -380,7 +368,9 @@ export class GestionComponent implements OnInit {
       default:
         this.categoriaSeleccionada = -1;
         this.equipoSeleccionado = -1;
+        this.isLoading = true;
         this.api.getCategorias().subscribe(data => {
+          this.isLoading = false;
           this.categorias = data;
           this.datosTabla = this.categorias;
           this.tituloTabla = 'Categorías';
@@ -405,16 +395,19 @@ export class GestionComponent implements OnInit {
           cancelButtonText: 'Cancelar'
         }).then((result) => {
           if (result.isConfirmed) {
+            this.isLoading = true;
             // Llamar al servicio para guardar
             const nuevaCategoria = this.nuevaCat.value; // Aquí asegúrate de que editarForm tenga los controles correctos para la categoría
             nuevaCategoria.campeonato = this.campeonatoGlobal.id;
             this.api.crearCategoria(nuevaCategoria).subscribe(
               (response) => {
+                this.isLoading = false;
                 this.alertas.success('Categoria ' + nuevaCategoria.categoria + ' creada con éxito.', 'Hecho');
                 this.mostrarDetalles('Categorías');
                 this.refrescarCantidad();
               },
               (error) => {
+                this.isLoading = false;
                 this.alertas.error(error.error.message || 'Error desconocido', 'Error al crear la categoría.');
               }
             );
@@ -437,17 +430,20 @@ export class GestionComponent implements OnInit {
             cancelButtonText: 'Cancelar'
           }).then((result) => {
             if (result.isConfirmed) {
+              this.isLoading = true;
               // Llamar al servicio para guardar
               const equipoData = this.nuevoEquipo.value;
               equipoData.campeonato = this.campeonatoGlobal.id;
               equipoData.nro_sorteo = Number(0);
               this.api.crearEquipo(equipoData, this.selectedFile).subscribe({
                 next: (response) => {
+                  this.isLoading = false;
                   this.alertas.success('Equipo creado con éxito', 'Hecho')
                   this.mostrarDetalles('Equipos');
                   this.refrescarCantidad();
                 },
                 error: (error) => {
+                  this.isLoading = false;
                   this.alertas.error(error.error.message || 'Error desconocido', 'Error al crear Equipo')
 
                 },
@@ -473,6 +469,7 @@ export class GestionComponent implements OnInit {
           cancelButtonText: 'Cancelar'
         }).then((result) => {
           if (result.isConfirmed) {
+            this.isLoading = true;
             // Llamar al servicio para guardar
             const jugadorData = this.nuevoJugador.value
             const dorsal: number = this.nuevoJugador.value.dorsal
@@ -480,22 +477,20 @@ export class GestionComponent implements OnInit {
             console.log('datos del form: ', this.nuevoJugador.value)
             jugadorData.dorsal = dorsal;
             jugadorData.equipo = equipo;
-
-            console.log('dorsal', this.nuevoJugador.value.dorsal)
-
             if (this.selectedFile) {
               //formData.append('foto', this.selectedFile);
               jugadorData.foto = this.selectedFile;
             }
             console.log('datos recibidos ', jugadorData)
             this.api.createJugador(jugadorData).subscribe((response) => {
+              this.isLoading = false;
               this.alertas.success('Jugador creado con éxito', 'Hecho')
               this.equipoSeleccionado = -1;
               this.mostrarDetalles('Jugadores');
               this.refrescarCantidad();
 
             }, (error) => {
-              console.error('Error al crear el jugador:', error);
+              this.isLoading = false;
               this.alertas.error(error.error.message || 'Error desconocido', 'Error al crear Jugador');
             });
           }
@@ -514,20 +509,22 @@ export class GestionComponent implements OnInit {
           cancelButtonText: 'Cancelar'
         }).then((result) => {
           if (result.isConfirmed) {
+            this.isLoading = true;
             // Llamar al servicio para guardar
             const nuevoArbitro = this.nuevoArbitro.value; // Aquí asegúrate de que editarForm tenga los controles correctos para la categoría
             nuevoArbitro.campeonato = this.campeonatoGlobal.id;
             this.api.crearArbitro(nuevoArbitro).subscribe(
               (response) => {
+                this.isLoading = false;
                 this.alertas.success('Arbitro ' + nuevoArbitro.nombres + ' creado con éxito.', 'Hecho');
                 this.mostrarDetalles('Arbitros');
                 this.refrescarCantidad();
               },
               (error) => {
+                this.isLoading = false;
                 this.alertas.error(error.error.message || 'Error desconocido', 'Error al crear Arbitro.',);
               }
             );
-            console.log(this.nuevoArbitro.value);
           }
         });
 
@@ -545,17 +542,19 @@ export class GestionComponent implements OnInit {
           cancelButtonText: 'Cancelar'
         }).then((result) => {
           if (result.isConfirmed) {
+            this.isLoading = true;
             // Llamar al servicio para guardar
             const nuevoDirigente = this.nuevoDirigente.value;
             nuevoDirigente.campeonato = this.campeonatoGlobal.id;
             this.api.crearDirigente(nuevoDirigente).subscribe(
               (response) => {
+                this.isLoading = false;
                 this.alertas.success('Dirigente ' + nuevoDirigente.nombres + ' creado con éxito.', 'Hecho');
-                console.log('dirigente: ', nuevoDirigente)
                 this.mostrarDetalles('Dirigentes');
                 this.refrescarCantidad();
               },
               (error) => {
+                this.isLoading = false;
                 this.alertas.error(error.error.message || 'Error desconocido', 'Error al crear Dirigente.',);
               }
             );
@@ -734,17 +733,19 @@ export class GestionComponent implements OnInit {
           cancelButtonText: 'Cancelar'
         }).then((result) => {
           if (result.isConfirmed) {
+            this.isLoading = true;
             // Ejecutar lógica de edición
             const categoriaEditada = this.editarCategoria.value;
             categoriaEditada.campeonato = this.campeonatoGlobal.id;
-            console.log('Categoria editada', categoriaEditada)
             this.api.editarCategoria(categoriaEditada).subscribe(
               (response) => {
+                this.isLoading = false;
                 this.alertas.success('Categoría actualizada con éxito.', 'Hecho');
                 this.mostrarDetalles('Categorías');
                 this.refrescarCantidad();
               },
               (error) => {
+                this.isLoading = false;
                 this.alertas.error(error.error.message || 'Error desconocido', 'Error al actualizar Categoría.');
               });
           }
@@ -764,6 +765,7 @@ export class GestionComponent implements OnInit {
           cancelButtonText: 'Cancelar'
         }).then((result) => {
           if (result.isConfirmed) {
+            this.isLoading = true;
             // Ejecutar lógica de edición
             const formData = new FormData();
             formData.append('nombre', this.editarEquipo.value.nombre);
@@ -774,20 +776,19 @@ export class GestionComponent implements OnInit {
             formData.append('campeonato', this.campeonatoGlobal.id.toString());
 
             if (this.selectedFile) {
-              console.log('Archivo seleccionado:', this.selectedFile);
               formData.append('logo', this.selectedFile);
             }
 
             const id = this.editarEquipo.value.id;
             this.api.editarEquipo(formData, id).subscribe(
               (response) => {
-                console.log('Equipo actualizado con éxito:', response);
+                this.isLoading = false;
                 this.alertas.success('Equipo actualizado con éxito.', 'Hecho');
                 this.mostrarDetalles('Equipos');
                 this.refrescarCantidad();
               },
               (error) => {
-                console.error('Error al actualizar el equipo:', error);
+                this.isLoading = false;
                 this.alertas.error(error.error.message || 'Error desconocido', 'Error al actualizar Equipo.');
               }
             );
@@ -807,6 +808,7 @@ export class GestionComponent implements OnInit {
           cancelButtonText: 'Cancelar'
         }).then((result) => {
           if (result.isConfirmed) {
+            this.isLoading = true;
             // Ejecutar lógica de edición
             const jugadorEditado = { ...this.editarJugador.value };
 
@@ -814,29 +816,27 @@ export class GestionComponent implements OnInit {
             if (!this.selectedFile) {
               delete jugadorEditado.foto;
             }
-
             const formData = new FormData();
             for (const key in jugadorEditado) {
               if (jugadorEditado[key] !== null && jugadorEditado[key] !== undefined) {
                 formData.append(key, jugadorEditado[key]);
               }
             }
-
             // Si hay una nueva foto, agregarla al FormData
             if (this.selectedFile) {
               formData.append('foto', this.selectedFile);
             }
 
-            console.log('Jugador actualizado: ', jugadorEditado);
-
             const id = this.editarJugador.value.id;
             this.api.editarJugador(formData, id).subscribe(
               (response) => {
+                this.isLoading = false;
                 this.alertas.success('Jugador actualizado con éxito.', 'Hecho');
                 this.mostrarDetalles('Jugadores');
                 this.refrescarCantidad();
               },
               (error) => {
+                this.isLoading = false;
                 this.alertas.error(error.error.message || 'Error desconocido', 'Error al actualizar Jugador.');
               }
             );
@@ -857,17 +857,19 @@ export class GestionComponent implements OnInit {
           cancelButtonText: 'Cancelar'
         }).then((result) => {
           if (result.isConfirmed) {
+            this.isLoading = true;
             // Ejecutar lógica de edición
             const arbitroEditado = this.editarArbitro.value;
             arbitroEditado.campeonato = this.campeonatoGlobal.id;
-            console.log('Arbitro actualizado: ', arbitroEditado)
             this.api.editarArbitro(arbitroEditado).subscribe(
               (response) => {
+                this.isLoading = false;
                 this.alertas.success('Arbitro actualizado con éxito.', 'Hecho');
                 this.mostrarDetalles('Arbitros');
                 this.refrescarCantidad();
               },
               (error) => {
+                this.isLoading = false;
                 this.alertas.error(error.error.message || 'Error desconocido', 'Error al actualizar Arbitro.');
               });
           }
@@ -886,16 +888,18 @@ export class GestionComponent implements OnInit {
           cancelButtonText: 'Cancelar'
         }).then((result) => {
           if (result.isConfirmed) {
+            this.isLoading = true;
             // Ejecutar lógica de edición
             const dirigenteEditado = this.editarDirigente.value;
             dirigenteEditado.campeonato = this.campeonatoGlobal.id;
-            console.log('Dirigente actualizado: ', dirigenteEditado)
             this.api.editarDirigente(dirigenteEditado).subscribe(response => {
               this.alertas.success('Dirigente actualizado con éxito.', 'Hecho');
+              this.isLoading = false;
               this.mostrarDetalles('Dirigentes');
               this.refrescarCantidad();
             },
               (error) => {
+                this.isLoading = false;
                 this.alertas.error(error.error.message || 'Error desconocido', 'Error al actualizar Dirigente.');
               });
           }
@@ -976,6 +980,7 @@ export class GestionComponent implements OnInit {
             cedula: data.cedula,
             nombres: data.nombres,
             apellidos: data.apellidos,
+            telefono: data.telefono,
             lugar_nacimiento: data.lugar_nacimiento,
             fecha_nacimiento: data.fecha_nacimiento,
             suspendido: data.suspendido,
@@ -1036,15 +1041,18 @@ export class GestionComponent implements OnInit {
   // Método para enviar el archivo al servidor
   onSubmit() {
     if (this.file) {
+      this.loading.show();
       const formData = new FormData();
       formData.append('file', this.file);
       formData.append('equipoId', this.equipoSeleccionado.toString());
 
       this.api.importarJugadores(formData).subscribe(
         (response) => {
+          this.loading.hide();
           this.alertas.success('Jugadores importados exitosamente', 'Hecho');
         },
         (error) => {
+          this.loading.hide();
           console.error(error);  // Verifica la respuesta del error aquí
           this.alertas.error('Hubo un error al importar los jugadores', 'Error');
         }

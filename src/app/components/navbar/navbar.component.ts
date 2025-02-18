@@ -4,6 +4,7 @@ import { Location, LocationStrategy, PathLocationStrategy } from '@angular/commo
 import { Router } from '@angular/router';
 import { ApiLoginService } from 'src/app/servicios/api/api-login.service';
 import Swal from 'sweetalert2';
+import { LoadingService } from 'src/app/servicios/loading.service';
 
 @Component({
   selector: 'app-navbar',
@@ -17,7 +18,7 @@ export class NavbarComponent implements OnInit {
 
   username: string = '';
 
-  constructor(location: Location, private element: ElementRef, private router: Router, private api: ApiLoginService) {
+  constructor(location: Location, private element: ElementRef, private router: Router, private api: ApiLoginService, public loading: LoadingService) {
     this.location = location;
   }
 
@@ -59,10 +60,12 @@ export class NavbarComponent implements OnInit {
       cancelButtonText: 'Cancelar'
     }).then((result) => {
       if (result.isConfirmed) {
+        this.loading.show();
         // Cerrar sesión
         localStorage.removeItem('access_token');
         localStorage.removeItem('token_expiration');
         localStorage.removeItem('campeonatoSeleccionado');
+        this.loading.hide();
         this.router.navigate(['/login']);
       }
     });

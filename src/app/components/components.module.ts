@@ -5,6 +5,8 @@ import { NavbarComponent } from './navbar/navbar.component';
 import { FooterComponent } from './footer/footer.component';
 import { RouterModule } from '@angular/router';
 import { NgbModule } from '@ng-bootstrap/ng-bootstrap';
+import { LoadingComponent } from './loading/loading/loading.component';
+import { ButtonLoadingComponent } from './button-loading/button-loading/button-loading.component';
 
 @NgModule({
   imports: [
@@ -16,11 +18,14 @@ import { NgbModule } from '@ng-bootstrap/ng-bootstrap';
     FooterComponent,
     NavbarComponent,
     SidebarComponent,
+    LoadingComponent,
+    ButtonLoadingComponent,
   ],
   exports: [
     FooterComponent,
     NavbarComponent,
-    SidebarComponent
+    SidebarComponent,
+    LoadingComponent
   ]
 })
 export class ComponentsModule { }

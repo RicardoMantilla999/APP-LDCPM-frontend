@@ -35,10 +35,19 @@
                                 <th scope="col">Fecha de Finalización</th>
                                 <th scope="col">Opciones</th>
                             </tr>
-
                         </thead>
                         <tbody>
-                            <tr *ngFor="let item of datosTabla">
+                            <!-- Mostrar loading cuando los datos están cargando -->
+                            <tr *ngIf="isLoading">
+                                <td colspan="5" class="text-center">
+                                    <img src="../../../assets/img/theme/balon.png" alt="Cargando..." width="40"
+                                        height="40" class="spin" />
+                                    <p class="mt-2">Cargando datos...</p>
+                                </td>
+                            </tr>
+
+                            <!-- Mostrar datos cuando ya han cargado -->
+                            <tr *ngFor="let item of datosTabla; else sinDatos">
                                 <td>
                                     <div class="text-center">
                                         <label>
@@ -48,24 +57,23 @@
                                         </label>
                                     </div>
                                 </td>
-
                                 <th scope="row">
                                     <div class="media align-items-center">
                                         <div class="media-body">
-                                            <span class="mb-0 text-sm">{{item.nombre}}</span>
+                                            <span class="mb-0 text-sm">{{ item.nombre }}</span>
                                         </div>
                                     </div>
                                 </th>
                                 <td>{{ item.fecha_inicio }} </td>
-                                <td>{{ item.fecha_fin}} </td>
+                                <td>{{ item.fecha_fin }} </td>
                                 <td class="text-right" *ngIf="userRol === 'admin'">
                                     <div ngbDropdown placement="bottom-right">
                                         <a class="btn btn-sm btn-icon-only text-light" ngbDropdownToggle>
                                             <i class="fas fa-ellipsis-v"></i>
                                         </a>
-                                        <div ngbDropdownMenu class=" dropdown-menu-right dropdown-menu-arrow">
+                                        <div ngbDropdownMenu class="dropdown-menu-right dropdown-menu-arrow">
                                             <a class="dropdown-item" href="javascript:void(0)"
-                                                (click)="abrirConfirmacion()">Editar</a>
+                                                (click)="mostrarFormEditar(item)">Editar</a>
                                             <a class="dropdown-item" href="javascript:void(0)"
                                                 (click)="eliminarCampeonato(item)">Eliminar</a>
                                         </div>
@@ -74,6 +82,14 @@
                             </tr>
                         </tbody>
                     </table>
+
+                    <!-- Mostrar mensaje si no hay datos -->
+                    <ng-template #sinDatos>
+                        <tr *ngIf="!isLoading && datosTabla.length === 0">
+                            <td colspan="5" class="text-center">No hay datos disponibles</td>
+                        </tr>
+                    </ng-template>
+
                 </div>
                 <!--   FORMULARIOS PARA CREAR      -->
                 <div *ngIf="mostrarFormularioNuevo">
@@ -120,7 +136,14 @@
                                 </div>
                             </form>
                             <div class="col text-right">
-                                <a type="button" class="btn btn-outline-success" (click)="crearCampeonato()">CREAR</a>
+                                <a type="button" class="btn btn-outline-success" (click)="crearCampeonato()"
+                                    [disabled]="isLoading">
+                                    <span *ngIf="!isLoading">CREAR</span>
+                                    <span *ngIf="isLoading">
+                                        <img src="../../../assets/img/theme/balon.png" alt="Cargando..." width="20"
+                                            height="20" />Creando...
+                                    </span>
+                                </a>
                                 <a type="button" class="btn btn-outline-danger" (click)="regresar()">CANCELAR</a>
                             </div>
                         </div>
@@ -170,9 +193,14 @@
 
                             </form>
                             <div class="col text-right">
-                                <a type="button" class="btn btn-outline-success"
-                                    (click)="actualizarCampeonato()">GUARDAR
-                                    CAMBIOS </a>
+                                <a type="button" class="btn btn-outline-success" (click)="actualizarCampeonato()"
+                                    [disabled]="isLoading">
+                                    <span *ngIf="!isLoading">GUARDAR</span>
+                                    <span *ngIf="isLoading">
+                                        <img src="../../../assets/img/theme/balon.png" alt="Cargando..." width="20"
+                                            height="20" />Guardando...
+                                    </span>
+                                </a>
                                 <a type="button" class="btn btn-outline-danger" (click)="regresar()">CANCELAR</a>
                             </div>
                         </div>

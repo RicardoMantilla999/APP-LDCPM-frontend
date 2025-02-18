@@ -15,6 +15,7 @@ import { toInteger } from '@ng-bootstrap/ng-bootstrap/util/util';
 import { Router } from '@angular/router';
 import { ToastrService } from 'ngx-toastr';
 import { PartidosI } from 'src/app/modelos/partidos.interface';
+import { LoadingService } from 'src/app/servicios/loading.service';
 
 @Component({
   selector: 'app-reportes',
@@ -75,7 +76,9 @@ export class ReportesComponent implements OnInit {
 
   rutaImagenes = '';
 
-  constructor(private api: ApiReportesService, private apiLog: ApiLoginService, private router: Router, private alertas: ToastrService) { }
+  isLoading = false;
+
+  constructor(public loading: LoadingService, private api: ApiReportesService, private apiLog: ApiLoginService, private router: Router, private alertas: ToastrService) { }
 
   ngOnInit(): void {
 
@@ -121,16 +124,18 @@ export class ReportesComponent implements OnInit {
   // }
 
   cargarTarjetas() {
+    this.isLoading = true;
+    this.datosTabla = [];
+    this.fechas = [];
     this.api.getReporteTarjetas(this.categoriaSeleccionada, this.equipoSeleccionado, this.faseSeleccionada).subscribe({
       next: (data) => {
-        console.log('Datos recibidos:', data); // Verificar los datos
         if (!data || Object.keys(data).length === 0) {
           console.log('No hay datos o los datos son vacíos');
           this.datosTabla = [];
           this.fechas = [];
           return;
         }
-
+        this.isLoading = false;
         // Convertir los datos en un array y asignar a datosTabla
         this.datosTabla = Object.values(data);
 
@@ -141,11 +146,9 @@ export class ReportesComponent implements OnInit {
             const numB = parseInt(b.replace('Fecha ', ''), 10);
             return numA - numB;
           });
-
-        console.log('Fechas extraídas:', this.fechas);
-        console.log('Datos procesados:', this.datosTabla);
       },
       error: (err) => {
+        this.isLoading = false;
         console.error('Error al cargar las tarjetas:', err);
       },
     });
@@ -153,6 +156,7 @@ export class ReportesComponent implements OnInit {
 
 
   obtenerJugadoresByEquipo() {
+    this.isLoading = true;
     const asignarFotoPredeterminada = (jugadores: any[]) => {
       const fotoPredeterminada = '../assets/img/theme/sin foto.png'; // Reemplaza con tu URL o ruta
       return jugadores.map(jugador => ({
@@ -163,6 +167,7 @@ export class ReportesComponent implements OnInit {
 
     this.apiLog.getJugadoresByEquipo(this.equipoSeleccionado).subscribe(data => {
       this.jugadores = asignarFotoPredeterminada(data);
+      this.isLoading = false;
       //this.jugadores = data;
       this.datosTabla = this.jugadores;
     })
@@ -199,13 +204,13 @@ export class ReportesComponent implements OnInit {
   }
 
   obtenerTablaPosiciones() {
+    this.isLoading = true;
     this.obtenerUnaCategoria();
     if (!this.categoriaSeleccionada) {
       this.alertas.error('Seleccione una categoría', 'Error');
       return;
     }
 
-    console.log('fase', this.faseSeleccionada);
     const fase = Number(this.faseSeleccionada);
 
     switch (fase) {
@@ -214,6 +219,7 @@ export class ReportesComponent implements OnInit {
         this.datosTabla = [];
         this.vaciarPartidos();
         this.api.getTablaPosiciones(this.categoriaSeleccionada, this.faseSeleccionada).subscribe(data => {
+          this.isLoading = false;
           this.posiciones = data;
           this.datosTabla = this.posiciones;
         });
@@ -228,6 +234,7 @@ export class ReportesComponent implements OnInit {
           this.partido2CuartosG2 = data[1];
           this.partido2CuartosG1 = data[2];
           this.partido1CuartosG1 = data[3];
+          this.isLoading = false;
         });
         break;
 
@@ -244,6 +251,7 @@ export class ReportesComponent implements OnInit {
         this.api.getResultadosFaseSemifinal(this.categoriaSeleccionada).subscribe(data => {
           this.partidoSemifinalG2 = data[0];
           this.partidoSemifinalG1 = data[1];
+          this.isLoading = false;
         });
         break;
 
@@ -266,11 +274,13 @@ export class ReportesComponent implements OnInit {
         });
         this.api.getCampeon(this.categoriaSeleccionada).subscribe(data => {
           this.equipoCampeon = data;
+          this.isLoading = false;
         });
         break;
 
       default:
         this.alertas.error('Fase seleccionada no válida', 'Error');
+        this.isLoading = false;
     }
 
   }
@@ -284,10 +294,11 @@ export class ReportesComponent implements OnInit {
   obtenerGoleadores() {
     this.obtenerUnaCategoria();
     this.obtenerEquipos();
+    this.isLoading = true;
     this.api.getGoleadores(this.categoriaSeleccionada, this.cantidadRegistros).subscribe(data => {
+      this.isLoading = false;
       this.goleadores = data;
       this.datosTabla = this.goleadores;
-      console.log('goleadores', this.datosTabla)
     })
   }
 
@@ -320,7 +331,6 @@ export class ReportesComponent implements OnInit {
 
   mostrarDetalles(tipo: string) {
     this.mostrarResultadoPosiciones = false;
-
 
     switch (tipo) {
 
@@ -422,7 +432,7 @@ export class ReportesComponent implements OnInit {
     const includeTitle = false; // Cambiar a false si no quieres el título en la página
     this.obtenerEquipo();
     logo.src = "../assets/img/theme/logo-LDCPM.png";
-    
+
 
     const carnetWidth = 80; // Ancho del carnet
     const carnetHeight = 58; // Alto del carnet

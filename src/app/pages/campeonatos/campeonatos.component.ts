@@ -5,6 +5,7 @@ import { ToastrService } from 'ngx-toastr';
 import { CampeonatosI } from 'src/app/modelos/campeonatos.interface';
 import { ApiCampeonatosService } from 'src/app/servicios/api/api-campeonatos.service';
 import { ApiLoginService } from 'src/app/servicios/api/api-login.service';
+import { LoadingService } from 'src/app/servicios/loading.service';
 import Swal from 'sweetalert2';
 
 
@@ -38,9 +39,13 @@ export class CampeonatosComponent implements OnInit {
 
   userRol: string = '';
 
-  constructor(private api: ApiCampeonatosService, private apiLog: ApiLoginService, private alertas: ToastrService, private router: Router) { }
+  isLoading = false;
+
+  constructor(public loading: LoadingService, private api: ApiCampeonatosService, private apiLog: ApiLoginService, private alertas: ToastrService, private router: Router) { }
 
   ngOnInit(): void {
+
+    this.loading.show();
     this.getUsuario();
     this.obtenerCampeonato();
     this.cargarCampeonatos();
@@ -57,6 +62,7 @@ export class CampeonatosComponent implements OnInit {
       fecha_inicio: new FormControl(''),
       fecha_fin: new FormControl(''),
     })
+    this.loading.hide();
   }
 
   getUsuario() {
@@ -90,7 +96,9 @@ export class CampeonatosComponent implements OnInit {
     this.router.navigate(['/login']);
   }
   cargarCampeonatos() {
+    this.isLoading = true;
     this.api.getCampeonatos().subscribe(data => {
+      this.isLoading = false;
       this.campeonatos = data;
       this.datosTabla = this.campeonatos;
     })
@@ -108,14 +116,17 @@ export class CampeonatosComponent implements OnInit {
       cancelButtonText: 'Cancelar'
     }).then((result) => {
       if (result.isConfirmed) {
+        this.isLoading = true;
         // Llamar al servicio para guardar
         const campeonato = this.nuevoCampeonato.value;
         this.api.crearCampeonato(campeonato).subscribe(
           (Response) => {
+            this.isLoading = false;
             this.alertas.success('Campeonato creado con éxito', 'Hecho');
             this.mostrarDatos()
 
           }, (error) => {
+            this.isLoading = false;
             this.alertas.error(error.error.message || 'Error desconocido', 'Error al crear el Campeonato')
           }
         )
@@ -126,7 +137,6 @@ export class CampeonatosComponent implements OnInit {
 
   seleccionarCampeonato(campeonato: any) {
     this.campeonatoGlobal = campeonato;
-    console.log('Campeonato seleccionado', campeonato);
     localStorage.setItem('campeonatoSeleccionado', JSON.stringify(campeonato));
   }
 
@@ -143,14 +153,17 @@ export class CampeonatosComponent implements OnInit {
       cancelButtonText: 'Cancelar'
     }).then((result) => {
       if (result.isConfirmed) {
+        this.isLoading = true;
         // Ejecutar lógica de edición
         const campeonato = this.editarCampeonato.value;
         this.api.actualizarCampeonato(campeonato).subscribe(
           (response) => {
+            this.isLoading = false;
             this.alertas.success('Campeonato actualizado con éxito', 'Hecho')
             this.mostrarDatos()
           },
           (error) => {
+            this.isLoading = false;
             this.alertas.error(error.error.message || 'Error desconocido', 'Error al actualizar Campeonato');
 
           }
@@ -176,14 +189,16 @@ export class CampeonatosComponent implements OnInit {
       cancelButtonText: 'Cancelar'
     }).then((result) => {
       if (result.isConfirmed) {
-        console.log('Elemento eliminado');
+        this.isLoading = true;
         // Llamar al servicio para eliminar
         this.api.eliminarCampeonato(item.id).subscribe(
           (response) => {
+            this.isLoading = false;
             this.alertas.success('Campeonato ' + item.nombre + ' eliminado con éxito.', 'Hecho');
             this.cargarCampeonatos()
           },
           (error) => {
+            this.isLoading = false;
             this.alertas.error(error.error.message || 'Error desconocido', 'Error al eliminar Campeonato.');
 
           }
@@ -204,8 +219,6 @@ export class CampeonatosComponent implements OnInit {
         fecha_inicio: data.fecha_inicio,
         fecha_fin: data.fecha_fin,
       })
-      console.log('Campeonato', this.editarCampeonato)
-
     })
   }
 
@@ -227,7 +240,6 @@ export class CampeonatosComponent implements OnInit {
     this.mostrarFormularioEditar = false;
     this.mostrarFormularioNuevo = false;
     this.cargarCampeonatos();
-
   }
 
 }

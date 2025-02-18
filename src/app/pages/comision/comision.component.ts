@@ -14,6 +14,7 @@ import autoTable from 'jspdf-autotable';
 import { ApiLoginService } from 'src/app/servicios/api/api-login.service';
 import { catchError, Observable, of, tap } from 'rxjs';
 import Swal from 'sweetalert2';
+import { LoadingService } from 'src/app/servicios/loading.service';
 
 @Component({
   selector: 'app-comision',
@@ -80,7 +81,9 @@ export class ComisionComponent implements OnInit {
   //Crear objetos
   nuevoSorteo: FormGroup;
 
-  constructor(private api: ApiComisionService, private apiLog: ApiLoginService, private router: Router, private activeRouter: ActivatedRoute, private formBuilder: FormBuilder, private alertas: ToastrService) {
+  isLoading = false;
+
+  constructor(public loading: LoadingService, private api: ApiComisionService, private apiLog: ApiLoginService, private router: Router, private activeRouter: ActivatedRoute, private formBuilder: FormBuilder, private alertas: ToastrService) {
     this.editarPartido = this.formBuilder.group({
       equipo_1: [{ value: '', disabled: true }], // Campo deshabilitado
       equipo_2: [{ value: '', disabled: true }],
@@ -90,9 +93,9 @@ export class ComisionComponent implements OnInit {
   }
 
   ngOnInit(): void {
-
+    this.loading.show();
     this.obtenerCampeonato();
-
+    this.loading.hide();
   }
 
   checkTokenExpiration(): void {
@@ -104,7 +107,6 @@ export class ComisionComponent implements OnInit {
       this.logout();
     }
   }
-
   // Método para cerrar sesión
   logout(): void {
     // Eliminar el token del localStorage
@@ -126,14 +128,14 @@ export class ComisionComponent implements OnInit {
   cargarEquipos() {
 
     this.obtenerUnaCategoria();
-
+    this.isLoading = true;
     if (this.categoriaSeleccionada < 1) {
-      // Si no hay categoría seleccionada o el valor es menor a 1
-      //this.equipos = [];
+      this.isLoading = false;
       this.datosTabla = [];
     } else {
       this.api.getEquiposByCategoriaAndCampeonato(this.categoriaSeleccionada, this.campeonatoGlobal.id).subscribe(data => {
         //this.equipos = data;
+        this.isLoading = false;
         this.datosTabla = data;
       });
     }
@@ -144,30 +146,30 @@ export class ComisionComponent implements OnInit {
     this.obtenerUnaCategoria(); // Asegúrate de que este método no altere lógica crítica.
 
     if (!this.fechaSeleccionada) {
-      console.log('No hay fecha seleccionada. Limpia datos.');
       this.datosTabla = [];
       return;
     }
-
+    this.isLoading = true;
     if (this.fechaSeleccionada < 0) {
       this.api.getPartidosCompletos(this.fase_actual.id, this.categoriaSeleccionada).subscribe(
         (data) => {
-          console.log('Datos de todas las fechas:', data);
+          this.isLoading = false;
           this.datosTabla = data || []; // Asegura que sea un array.
         },
         (error) => {
-          console.error('Error al cargar partidos completos:', error);
+          this.isLoading = false;
           this.datosTabla = [];
         }
       );
     } else if (this.fechaSeleccionada > 0) {
       this.api.getPartidos(this.fase_actual.id, this.categoriaSeleccionada, this.fechaSeleccionada).subscribe(
         (data) => {
-          console.log('Datos de la fecha específica:', data);
+          this.isLoading = false;
           this.datosTabla = data || [];
         },
         (error) => {
-          console.error('Error al cargar partidos:', error);
+          this.isLoading = false;
+          this.alertas.error('Error al cargar los partidos', error);
           this.datosTabla = [];
         }
       );
@@ -197,21 +199,22 @@ export class ComisionComponent implements OnInit {
       this.fase_actual = { id: 0, nombre: 'Sin Fase', orden: 0 };
       return;
     }
-
+    this.isLoading = true;
     // Obtiene la fase actual y luego carga las fechas
     this.obtenerFaseActual().subscribe(() => {
       this.api.getFechas(this.categoriaSeleccionada, this.fase_actual.id).subscribe(
         (data) => {
+          this.isLoading = false;
           this.fechas = data || []; // Asegúrate de que siempre sea un array
           this.fechaSeleccionada = null;
           this.datosTabla = [];
-          console.log('Fechas cargadas:', this.fechas);
         },
         (error) => {
-          console.error('Error al cargar fechas:', error);
+          this.isLoading = false;
           this.fechas = [];
           this.fechaSeleccionada = null;
           this.datosTabla = [];
+          this.alertas.error('Error al cargar las fechas.', error);
         }
       );
     });
@@ -508,7 +511,7 @@ export class ComisionComponent implements OnInit {
 
   cargarDetallesPartido(partidoId: number) {
 
-
+    this.isLoading = true;
     this.api.getPartido(partidoId).subscribe({
       next: (respuesta) => {
         // Si la respuesta es un arreglo, tomamos el primer elemento
@@ -554,6 +557,7 @@ export class ComisionComponent implements OnInit {
               console.error('Error al cargar jugadores del equipo 2:', error);
             },
           });
+          this.isLoading = false;
         } else {
           console.error('La respuesta no contiene datos del partido:', respuesta);
         }
@@ -720,12 +724,14 @@ export class ComisionComponent implements OnInit {
 
 
   cargarPosiciones(): void {
+    this.isLoading = true;
     this.api.obtenerPosiciones(this.categoriaSeleccionada, this.faseSeleccionada).subscribe({
       next: (response) => {
+        this.isLoading = false;
         this.posiciones = response.posiciones;
-        console.log('Posiciones cargadas:', this.posiciones);
       },
       error: (error) => {
+        this.isLoading = false;
         console.error('Error al cargar posiciones:', error);
       },
     });

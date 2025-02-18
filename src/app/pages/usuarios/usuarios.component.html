@@ -28,6 +28,14 @@
 
                         </thead>
                         <tbody>
+                            <!-- Mostrar loading cuando los datos están cargando -->
+                            <tr *ngIf="isLoading">
+                                <td colspan="5" class="text-center">
+                                    <img src="../../../assets/img/theme/balon.png" alt="Cargando..." width="40"
+                                        height="40" class="spin" />
+                                    <p class="mt-2">Cargando datos...</p>
+                                </td>
+                            </tr>
                             <tr *ngFor="let item of datosTabla; let i = index">
 
                                 <td>{{ i + 1 }}</td>

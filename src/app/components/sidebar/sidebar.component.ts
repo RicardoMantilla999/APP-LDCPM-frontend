@@ -1,6 +1,7 @@
 import { Component, OnInit } from '@angular/core';
 import { Router } from '@angular/router';
 import { ApiLoginService } from 'src/app/servicios/api/api-login.service';
+import { LoadingService } from 'src/app/servicios/loading.service';
 import Swal from 'sweetalert2';
 
 declare interface RouteInfo {
@@ -33,7 +34,7 @@ export class SidebarComponent implements OnInit {
   public isCollapsed = true;
   username: string = '';
 
-  constructor(private router: Router, private api: ApiLoginService) { }
+  constructor(private router: Router, private api: ApiLoginService, public loading: LoadingService) { }
 
   ngOnInit() {
     this.filterRoutesByRole();
@@ -81,10 +82,12 @@ export class SidebarComponent implements OnInit {
       cancelButtonText: 'Cancelar'
     }).then((result) => {
       if (result.isConfirmed) {
+        this.loading.show();
         // Cerrar sesión
         localStorage.removeItem('access_token');
         localStorage.removeItem('token_expiration');
         localStorage.removeItem('campeonatoSeleccionado');
+        this.loading.hide();
         this.router.navigate(['/login']);
       }
     });

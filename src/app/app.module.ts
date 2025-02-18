@@ -30,6 +30,7 @@ import { UserProfileComponent } from './pages/user-profile/user-profile.componen
 import { UsuariosComponent } from './pages/usuarios/usuarios.component';
 import { HistorialComponent } from './pages/historial/historial.component';
 import { FilterPipe } from './pipes/filter.pipe';
+import { LoadingComponent } from './components/loading/loading/loading.component';
 
 
 
