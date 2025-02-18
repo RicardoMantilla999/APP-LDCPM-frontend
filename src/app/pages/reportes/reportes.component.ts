@@ -133,9 +133,9 @@ export class ReportesComponent implements OnInit {
           console.log('No hay datos o los datos son vacíos');
           this.datosTabla = [];
           this.fechas = [];
+          this.isLoading = false;
           return;
         }
-        this.isLoading = false;
         // Convertir los datos en un array y asignar a datosTabla
         this.datosTabla = Object.values(data);
 
@@ -146,6 +146,7 @@ export class ReportesComponent implements OnInit {
             const numB = parseInt(b.replace('Fecha ', ''), 10);
             return numA - numB;
           });
+        this.isLoading = false;
       },
       error: (err) => {
         this.isLoading = false;
@@ -225,7 +226,7 @@ export class ReportesComponent implements OnInit {
         });
         break;
 
-      case 3: // CUARTOS 3
+      case 2: // CUARTOS 3
         this.mostrarResultadoPosiciones = true;
         this.datosTabla = [];
         this.vaciarPartidos();
@@ -238,7 +239,7 @@ export class ReportesComponent implements OnInit {
         });
         break;
 
-      case 4: // SEMIFINAL 4
+      case 3: // SEMIFINAL 4
         this.mostrarResultadoPosiciones = true;
         this.datosTabla = [];
         this.vaciarPartidos();
@@ -255,7 +256,7 @@ export class ReportesComponent implements OnInit {
         });
         break;
 
-      case 9: // FINAL 9
+      case 4: // FINAL 9
         this.mostrarResultadoPosiciones = true;
         this.datosTabla = [];
         this.vaciarPartidos();
@@ -426,133 +427,156 @@ export class ReportesComponent implements OnInit {
   }
 
 
-  reporteCarnets() {
+  async reporteCarnets() {
     const doc = new jsPDF();
-    const logo = new Image();
-    const includeTitle = false; // Cambiar a false si no quieres el título en la página
+    const logoSrc = "../assets/img/theme/logo-LDCPM.png";
+    const includeTitle = false; // Cambiar a true si quieres el título
     this.obtenerEquipo();
-    logo.src = "../assets/img/theme/logo-LDCPM.png";
 
-
-    const carnetWidth = 80; // Ancho del carnet
-    const carnetHeight = 58; // Alto del carnet
-    const margin = 5; // Margen alrededor de cada carnet
-    const gap = 2; // Espacio entre carnets
-    const pageWidth = 210; // Ancho de la página A4
-    const pageHeight = 297; // Alto de la página A4
+    // Configuración del carnet
+    const carnetWidth = 80;
+    const carnetHeight = 58;
+    const margin = 5;
+    const gap = 2;
+    const pageWidth = 210;
+    const pageHeight = 297;
     const carnetsPerRow = 2;
-    const carnetsPerColumn = Math.floor((pageHeight - margin * 2 - (includeTitle ? 20 : 0)) / (carnetHeight + gap));
+    const carnetsPerColumn = Math.floor(
+      (pageHeight - margin * 2 - (includeTitle ? 20 : 0)) / (carnetHeight + gap)
+    );
 
-    logo.onload = () => {
-      let currentY = margin + (includeTitle ? 20 : 0);
-
-      if (includeTitle) {
-        // Título principal
-        doc.setFontSize(10);
-        doc.setFont('Normal', 'bold');
-        doc.text('LIGA DEPORTIVA CANTONAL DE PEDRO MONCAYO', pageWidth / 2, 15, { align: 'center' });
-        doc.text('COPA "' + this.campeonatoGlobal.nombre + '"', pageWidth / 2, 20, { align: 'center' });
-        doc.text('CARNETS DE JUGADORES', pageWidth / 2, 25, { align: 'center' });
-      }
-
-      this.datosTabla.forEach((jugador, index) => {
-        const row = Math.floor(index / carnetsPerRow);
-        const col = index % carnetsPerRow;
-
-        const x = margin + col * (carnetWidth + gap);
-        const y = currentY + row * (carnetHeight + gap);
-
-        // Cambia de página si se alcanza el límite
-        if (y + carnetHeight > pageHeight - margin) {
-          doc.addPage();
-          currentY = margin;
-        }
-
-        // Restablecer color y grosor de línea
-        doc.setLineWidth(0.3); // Línea normal para el rectángulo
-        doc.setDrawColor(0, 0, 0); // Negro para el borde del carnet
-        doc.rect(x, y, carnetWidth, carnetHeight);
-
-        // Fondo rojo para el título
-        doc.setDrawColor(255, 0, 0); // Rojo
-        doc.setLineWidth(7);
-        doc.line(x + 1, y + 9, x + carnetWidth - 5, y + 9);
-
-        // Título del carnet
-        doc.setFontSize(8);
-        doc.setFont('Normal', 'bold');
-        doc.setTextColor(255, 255, 255); // Blanco
-        doc.text('"PEDRO MONCAYO"', x + carnetWidth / 2, y + 10, { align: 'center' });
-        doc.setTextColor(0, 0, 0); // Negro
-        doc.text('LIGA DEPORTIVA CANTONAL', x + carnetWidth / 2, y + 5, { align: 'center' });
-        doc.text('COPA: ' + this.campeonatoGlobal.nombre, x + carnetWidth / 2, y + 15, { align: 'center' });
-        //logo
-        doc.addImage(logo, 'JPEG', x + 6, y + 1, 12, 17)
-
-        // Foto del jugador
-        const fotoJugador = new Image();
-        fotoJugador.src = this.rutaImagenes + jugador.foto;
-        fotoJugador.onload = () => {
-          doc.addImage(fotoJugador, 'JPEG', x + 2, y + 20, 20, 25);
-
-          // Información del jugador
-          //equipo
-          doc.setFontSize(8);
-          doc.setFont('Normal', 'bold');
-          doc.text(jugador.equipo.nombre, x + carnetWidth / 2, y + 20, { align: 'center' })
-          doc.setFontSize(7);
-          doc.setFont('Normal', 'normal');
-          doc.text('APELLIDOS: ', x + 24, y + 25);
-          doc.text('NOMBRES: ', x + 24, y + 30);
-          doc.text('C.I: ', x + 24, y + 35);
-          doc.text('F. NACIMIENTO: ', x + 24, y + 40);
-          doc.setFont('Normal', 'bold');
-          doc.text(jugador.apellidos, x + 39, y + 25);
-          doc.text(jugador.nombres, x + 37, y + 30);
-          doc.text(jugador.cedula, x + 29, y + 35);
-          doc.text(jugador.fecha_nacimiento, x + 44, y + 40);
-
-          // Línea lateral azul
-          doc.setDrawColor(0, 55, 200);
-          doc.setLineWidth(10);
-          doc.line(x + carnetWidth - 5, y + 2, x + carnetWidth - 5, y + carnetHeight - 2);
-          doc.setFontSize(11);
-          doc.setFont('Normal', 'bold');
-          doc.setTextColor(255, 255, 255); // Blanco
-          doc.text('Serie: ' + this.categoria.categoria, x + carnetWidth - 4, y + carnetHeight - 5, { angle: 90 });
-
-          // Dorsal
-          doc.setFontSize(14);
-          doc.setFont('Normal', 'bold');
-          doc.setTextColor(255, 255, 255); // Blanco
-          doc.text('#' + jugador.dorsal, x + carnetWidth - 5, y + 10, { align: 'center' });
-
-          // Firma
-          doc.setFontSize(6);
-          doc.setFont('Normal', 'normal');
-          doc.setTextColor(0, 0, 0); // Negro
-          doc.text('F. PRESIDENTE C.F.', x + 10, y + carnetHeight - 2);
-          doc.text('F. SECRETARIO C.F.', x + carnetWidth - 40, y + carnetHeight - 2);
-
-          if (index === this.datosTabla.length - 1) {
-            doc.save('Carnet_Jugadores.pdf');
-          }
-        };
-
-        fotoJugador.onerror = () => {
-          doc.text('Error al cargar la foto', x + carnetWidth / 2, y + 20, { align: 'center' });
-          if (index === this.datosTabla.length - 1) {
-            doc.save('carnet_jugadores_error.pdf');
-          }
-        };
+    // Función para cargar imágenes de forma asíncrona
+    const cargarImagen = (src: string): Promise<HTMLImageElement> => {
+      return new Promise((resolve, reject) => {
+        const img = new Image();
+        img.src = src;
+        img.onload = () => resolve(img);
+        img.onerror = () => reject(new Error(`Error al cargar imagen: ${src}`));
       });
     };
 
-    logo.onerror = () => {
-      doc.text('Error al cargar el logotipo', pageWidth / 2, 15, { align: 'center' });
+    try {
+      const logo = await cargarImagen(logoSrc);
+
+      let currentY = margin + (includeTitle ? 20 : 0);
+      let carnetIndex = 0;
+
+      if (includeTitle) {
+        doc.setFontSize(10);
+        doc.setFont('Normal', 'bold');
+        doc.text('LIGA DEPORTIVA CANTONAL DE PEDRO MONCAYO', pageWidth / 2, 15, { align: 'center' });
+        doc.text(`COPA "${this.campeonatoGlobal.nombre}"`, pageWidth / 2, 20, { align: 'center' });
+        doc.text('CARNETS DE JUGADORES', pageWidth / 2, 25, { align: 'center' });
+      }
+
+      // Cargar todas las imágenes de los jugadores antes de dibujar
+      const imagenesJugadores = await Promise.all(
+        this.datosTabla.map(async (jugador) => {
+          try {
+            return await cargarImagen(this.rutaImagenes + jugador.foto);
+          } catch {
+            return null; // Si falla la carga, retornar null
+          }
+        })
+      );
+
+      this.datosTabla.forEach((jugador, index) => {
+        const row = Math.floor(carnetIndex / carnetsPerRow);
+        const col = carnetIndex % carnetsPerRow;
+
+        let x = margin + col * (carnetWidth + gap);
+        let y = currentY + row * (carnetHeight + gap);
+
+        // Si el carnet no cabe, cambiar de página
+        if (row >= carnetsPerColumn) {
+          doc.addPage();
+          carnetIndex = 0;
+          currentY = margin + (includeTitle ? 20 : 0);
+          x = margin;
+          y = currentY;
+        }
+
+        // Dibujar el carnet
+        doc.setLineWidth(0.3);
+        doc.setDrawColor(0, 0, 0);
+        doc.rect(x, y, carnetWidth, carnetHeight);
+
+        // Línea superior roja
+        doc.setDrawColor(255, 0, 0);
+        doc.setLineWidth(7);
+        doc.line(x + 1, y + 9, x + carnetWidth - 5, y + 9);
+
+        // Texto del carnet
+        doc.setFontSize(8);
+        doc.setFont('Normal', 'bold');
+        doc.setTextColor(255, 255, 255);
+        doc.text('"PEDRO MONCAYO"', x + carnetWidth / 2, y + 10, { align: 'center' });
+        doc.setTextColor(0, 0, 0);
+        doc.text('LIGA DEPORTIVA CANTONAL', x + carnetWidth / 2, y + 5, { align: 'center' });
+        doc.text(`COPA: ${this.campeonatoGlobal.nombre}`, x + carnetWidth / 2, y + 15, { align: 'center' });
+
+        // Agregar el logo
+        doc.addImage(logo, 'JPEG', x + 6, y + 1, 12, 17);
+
+        // Foto del jugador (si se cargó correctamente)
+        const fotoJugador = imagenesJugadores[index];
+        if (fotoJugador) {
+          doc.addImage(fotoJugador, 'JPEG', x + 2, y + 20, 20, 25);
+        } else {
+          doc.text('Error al cargar foto', x + carnetWidth / 2, y + 32, { align: 'center' });
+        }
+
+        // Información del jugador
+        doc.setFontSize(8);
+        doc.setFont('Normal', 'bold');
+        doc.text(jugador.equipo.nombre, x + carnetWidth / 2, y + 20, { align: 'center' });
+
+        doc.setFontSize(7);
+        doc.setFont('Normal', 'normal');
+        doc.text('APELLIDOS: ', x + 24, y + 25);
+        doc.text('NOMBRES: ', x + 24, y + 30);
+        doc.text('C.I: ', x + 24, y + 35);
+        doc.text('F. NACIMIENTO: ', x + 24, y + 40);
+        doc.setFont('Normal', 'bold');
+        doc.text(jugador.apellidos, x + 39, y + 25);
+        doc.text(jugador.nombres, x + 37, y + 30);
+        doc.text(jugador.cedula, x + 29, y + 35);
+        doc.text(jugador.fecha_nacimiento, x + 44, y + 40);
+
+        // Línea lateral azul
+        doc.setDrawColor(0, 55, 200);
+        doc.setLineWidth(10);
+        doc.line(x + carnetWidth - 5, y + 2, x + carnetWidth - 5, y + carnetHeight - 2);
+        doc.setFontSize(11);
+        doc.setFont('Normal', 'bold');
+        doc.setTextColor(255, 255, 255);
+        doc.text(`Serie: ${this.categoria.categoria}`, x + carnetWidth - 4, y + carnetHeight - 5, { angle: 90 });
+
+        // Dorsal
+        doc.setFontSize(14);
+        doc.setFont('Normal', 'bold');
+        doc.setTextColor(255, 255, 255);
+        doc.text(`#${jugador.dorsal}`, x + carnetWidth - 5, y + 10, { align: 'center' });
+
+        // Firma
+        doc.setFontSize(6);
+        doc.setFont('Normal', 'normal');
+        doc.setTextColor(0, 0, 0);
+        doc.text('F. PRESIDENTE C.F.', x + 10, y + carnetHeight - 2);
+        doc.text('F. SECRETARIO C.F.', x + carnetWidth - 40, y + carnetHeight - 2);
+
+        carnetIndex++;
+      });
+
+      // Guardar el PDF al final
+      doc.save('Carnet_Jugadores.pdf');
+    } catch (error) {
+      console.error('Error al generar el PDF:', error);
+      doc.text('Error al generar el reporte', pageWidth / 2, pageHeight / 2, { align: 'center' });
       doc.save('carnet_jugadores_error.pdf');
-    };
+    }
   }
+
 
 
 

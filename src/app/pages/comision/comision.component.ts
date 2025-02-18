@@ -787,7 +787,8 @@ export class ComisionComponent implements OnInit {
   reporteSorteo() {
     const doc = new jsPDF();
     const logo = new Image();
-    logo.src = "../../../assets/img/theme/logo LDCPM.jpg"; // Ruta de la imagen
+    logo.src = "../../../assets/img/theme/logo-LDCPM.png"; // Ruta de la imagen
+    
 
     logo.onload = () => {
       doc.addImage(logo, 'JPEG', 10, 10, 40, 40); // (x=10, y=10), con ancho=50 y alto=30
@@ -814,7 +815,7 @@ export class ComisionComponent implements OnInit {
       doc.text('TABLA DE SORTEO', 70, 75);
 
       // Cabecera de la tabla
-      const headers = [['Nro', 'Equipo', 'Nro Sorteo']];
+      const headers = [['Orden', 'Equipo', 'Nro Sorteo']];
 
       const data = this.datosTabla.map((pos, index) => [
         index + 1,  // Número de la posición
@@ -854,7 +855,7 @@ export class ComisionComponent implements OnInit {
   reporteCalendarioCompleto() {
     const doc = new jsPDF();
     const logo = new Image();
-    logo.src = "../../../assets/img/theme/logo LDCPM.jpg";
+    logo.src = "../../../assets/img/theme/logo-LDCPM.png";
 
     logo.onload = () => {
       doc.addImage(logo, 'JPEG', 10, 10, 40, 40);
@@ -946,7 +947,7 @@ export class ComisionComponent implements OnInit {
   reporteResultados() {
     const doc = new jsPDF();
     const logo = new Image();
-    logo.src = "../../../assets/img/theme/logo LDCPM.jpg";
+    logo.src = "../../../assets/img/theme/logo-LDCPM.png";
 
     logo.onload = () => {
       doc.addImage(logo, 'JPEG', 10, 10, 40, 40);

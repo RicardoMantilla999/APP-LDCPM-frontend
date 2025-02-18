@@ -409,7 +409,7 @@
                                             <thead class="thead-dark">
                                                 <tr>
                                                     <th>#</th>
-                                                    <th>Nombre Completo</th>
+                                                    <th>Apellidos</th>
                                                     <th *ngIf="accionActual === 'goles'">Goles</th>
                                                     <th *ngIf="accionActual === 'tarjetas'">Tarjetas</th>
                                                     <th>Opción</th>
@@ -418,7 +418,7 @@
                                             <tbody>
                                                 <tr *ngFor="let jugador of jugadoresEquipo1">
                                                     <td>{{ jugador.dorsal }}</td>
-                                                    <td>{{ jugador.apellidos }} {{ jugador.nombres }}</td>
+                                                    <td>{{ jugador.apellidos }}</td>
                                                     <td *ngIf="accionActual === 'goles'">
                                                         <input type="number" [(ngModel)]="jugador.goles" min="0"
                                                             class="form-control" />
@@ -446,7 +446,7 @@
                                             <thead class="thead-dark">
                                                 <tr>
                                                     <th>#</th>
-                                                    <th>Nombre Completo</th>
+                                                    <th>Apellidos</th>
                                                     <th *ngIf="accionActual === 'goles'">Goles</th>
                                                     <th *ngIf="accionActual === 'tarjetas'">Tarjetas</th>
                                                     <th>Opción</th>
@@ -455,7 +455,7 @@
                                             <tbody>
                                                 <tr *ngFor="let jugador of jugadoresEquipo2">
                                                     <td>{{ jugador.dorsal }}</td>
-                                                    <td>{{ jugador.apellidos }} {{ jugador.nombres }}</td>
+                                                    <td>{{ jugador.apellidos }} </td>
                                                     <td *ngIf="accionActual === 'goles'">
                                                         <input type="number" [(ngModel)]="jugador.goles" min="0"
                                                             class="form-control" />
